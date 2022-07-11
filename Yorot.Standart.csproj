@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Yorot</RootNamespace>
+    <Version>1.0.0.0</Version>
+    <Authors>Haltroy</Authors>
+    <Description>Standart library for all Yorot flavors.</Description>
+    <PackageProjectUrl>https://github.com/Haltroy/Yorot</PackageProjectUrl>
+    <OutputType>Library</OutputType>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Foster" Version="2.0.0.1" />
+    <PackageReference Include="HTAlt.Standart" Version="0.1.7.5" />
+    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+  </ItemGroup>
+
+</Project>
