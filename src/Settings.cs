@@ -496,7 +496,7 @@ namespace Yorot
             List<YorotLanguage> langList = Profile.Manager.Main.LangMan.Languages.FindAll(it => it.Enabled);
             List<YorotExtension> extList = Profile.Manager.Main.Extensions.Extensions.FindAll(it => it.Enabled);
             List<YorotTheme> themeList = Profile.Manager.Main.ThemeMan.Themes.FindAll(it => it.Enabled);
-            List<YorotApp> appList = Profile.Manager.Main.AppMan.Apps.FindAll(it => it.isEnabled);
+            List<YorotAppInfo> appList = Profile.Manager.Main.AppMan.AppInfos.FindAll(it => it.isEnabled);
             string x = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + Environment.NewLine +
                 "<root>" + Environment.NewLine +
                 "<!-- Yorot User File" + Environment.NewLine + Environment.NewLine +
@@ -556,11 +556,11 @@ namespace Yorot
                 }
                 x += "</WebEngines>" + Environment.NewLine;
             }
-            List<YorotApp> enabledApps = Profile.Manager.Main.AppMan.Apps.FindAll(it => it.isEnabled);
+            List<YorotAppInfo> enabledApps = Profile.Manager.Main.AppMan.AppInfos.FindAll(it => it.isEnabled);
             if (enabledApps.Count > 0)
             {
                 x += "<Apps>" + Environment.NewLine;
-                foreach (YorotApp app in enabledApps)
+                foreach (YorotAppInfo app in enabledApps)
                 {
                     x += "<App Name=\"" + app.AppCodeName + "\" " + (app.isPinned ? "isPinned=\"true\" " : "") + "/>" + Environment.NewLine;
                 }
