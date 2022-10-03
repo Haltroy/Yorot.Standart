@@ -1,5 +1,8 @@
 ﻿using HTAlt;
+using LibFoster;
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace Yorot
@@ -57,8 +60,6 @@ namespace Yorot
             AppsFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "apps" + System.IO.Path.DirectorySeparatorChar;
             ProfilesFolder = AppPath + "user" + System.IO.Path.DirectorySeparatorChar;
             ProfileConfig = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "users.ycf";
-            WEConfig = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "weng.ycf";
-            WEFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "weng" + System.IO.Path.DirectorySeparatorChar;
             EPMConfig = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "exp.ycf";
             EPFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "exp" + System.IO.Path.DirectorySeparatorChar;
             SiteIconCache = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "icons" + System.IO.Path.DirectorySeparatorChar;
@@ -88,8 +89,6 @@ namespace Yorot
                         AppsFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "apps" + System.IO.Path.DirectorySeparatorChar;
                         ProfilesFolder = AppPath + "user" + System.IO.Path.DirectorySeparatorChar;
                         ProfileConfig = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "users.ycf";
-                        WEConfig = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "weng.ycf";
-                        WEFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "weng" + System.IO.Path.DirectorySeparatorChar;
                         EPMConfig = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "exp.ycf";
                         EPFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "exp" + System.IO.Path.DirectorySeparatorChar;
                         LogFolder = AppPath + "logs" + System.IO.Path.DirectorySeparatorChar;
@@ -102,12 +101,12 @@ namespace Yorot
                     }
                     else
                     {
-                        Output.WriteLine("[YorotMain] Ignoring yorot.moved file. Cannot use path given in this file.", LogLevel.Warning);
+                        Output.WriteLine("[YorotMain] Ignoring yorot.moved file. Cannot use path given in this file.", HTAlt.LogLevel.Warning);
                     }
                 }
                 else
                 {
-                    Output.WriteLine("[YorotMain] Ignoring yorot.moved file. File does not contains suitable path data.", LogLevel.Warning);
+                    Output.WriteLine("[YorotMain] Ignoring yorot.moved file. File does not contains suitable path data.", HTAlt.LogLevel.Warning);
                 }
             }
 
@@ -117,7 +116,6 @@ namespace Yorot
             if (!System.IO.Directory.Exists(ThemesFolder)) { System.IO.Directory.CreateDirectory(ThemesFolder); }
             if (!System.IO.Directory.Exists(AppsFolder)) { System.IO.Directory.CreateDirectory(AppsFolder); }
             if (!System.IO.Directory.Exists(ProfilesFolder)) { System.IO.Directory.CreateDirectory(ProfilesFolder); }
-            if (!System.IO.Directory.Exists(WEFolder)) { System.IO.Directory.CreateDirectory(WEFolder); }
             if (!System.IO.Directory.Exists(EPFolder)) { System.IO.Directory.CreateDirectory(EPFolder); }
             if (!System.IO.Directory.Exists(TempFolder)) { System.IO.Directory.CreateDirectory(TempFolder); }
             if (!System.IO.Directory.Exists(WHFolder)) { System.IO.Directory.CreateDirectory(WHFolder); }
@@ -127,7 +125,6 @@ namespace Yorot
             ThemeMan = new ThemeManager(this);
             LangMan = new YorotLangManager(this);
             Extensions = new ExtensionManager(this);
-            WebEngineMan = new YorotWEManager(this);
             Profiles = new ProfileManager(this);
             ExpPackManager = new EPManager(this);
             Wolfhook = new Wolfhook(WHFolder);
@@ -178,24 +175,25 @@ namespace Yorot
                     osInfo = osInfo.Replace("[PROC]", "Aarch64").Replace("[WINPROC]", "WinARM64").Replace("[OSXPROC]", "M1").Replace("[XPROC]", "ARM64");
                     break;
             }
-
-            return $"Mozilla/5.0 ({osInfo}) AppleWebKit/537.36 (KHTML, like Gecko) {engineName}/{engineVersion} Safari/537.36 {Name}/{VersionText}";
+            CurrentUserAgent = $"Mozilla/5.0 ({osInfo}) AppleWebKit/537.36 (KHTML, like Gecko) {engineName}/{engineVersion} Safari/537.36 {Name}/{VersionText}";
+            return CurrentUserAgent;
         }
 
         private System.Collections.Generic.List<YorotBrowserWebSource> _sources = new System.Collections.Generic.List<YorotBrowserWebSource>();
 
-        public YorotMain RegisterWebSource(string url, object data, string type, bool takesArguments = false)
+        public void RegisterWebSource(string url, object data, string type, bool takesArguments = false, bool ignoredBySessionMan = false)
         {
-            YorotBrowserWebSource source = new YorotBrowserWebSource();
-            source.Data = data;
-            source.Url = url;
-            source.Type = type;
-            source.TakesArguments = takesArguments;
-            _sources.Add(source);
-            return this;
+            _sources.Add(new YorotBrowserWebSource
+            {
+                Data = data,
+                Url = url,
+                Type = type,
+                IgnoreOnSessionList = ignoredBySessionMan,
+                TakesArguments = takesArguments
+            });
         }
 
-        public YorotMain UnregisterWebSource(string url)
+        public void UnregisterWebSource(string url)
         {
             var sources = _sources.FindAll(x => x.Url == url);
             if (sources.Count > 0)
@@ -205,21 +203,80 @@ namespace Yorot
                     _sources.Remove(sources[i]);
                 }
             }
-            return this;
         }
 
-        public string[] GetWebSource(string url, string[,] args)
+        public YorotBrowserWebSource GetWebSource(string url)
+        {
+            var sources = _sources.FindAll(x => x.Url == url);
+            if (sources.Count > 0)
+            {
+                return sources[0];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public string[] GetWebSource(string url, List<YorotBrowserWebSource.Argument> args = null)
         {
             var sources = _sources.FindAll(x => x.Url == url);
             if (sources.Count > 0 && sources[0].Data is string str)
             {
                 string newstr = str;
-                for (int i = 0; i < args.Length; i++)
+                string[,] itArgs = new string[,]
                 {
-                    newstr = newstr.Replace("[" + args[i, 0] + "]", args[i, 1]);
+                    { "Theme.BackColor", HTAlt.Tools.ColorToHex(CurrentTheme.BackColor) },
+                    { "Theme.BackColor2", HTAlt.Tools.ColorToHex(CurrentTheme.BackColor2) },
+                    { "Theme.BackColor3", HTAlt.Tools.ColorToHex(CurrentTheme.BackColor3) },
+                    { "Theme.BackColor4", HTAlt.Tools.ColorToHex(CurrentTheme.BackColor4) },
+                    { "Theme.ForeColor", HTAlt.Tools.ColorToHex(CurrentTheme.ForeColor) },
+                    { "Theme.OverlayColor", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayColor) },
+                    { "Theme.OverlayColor2", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayColor2) },
+                    { "Theme.OverlayColor3", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayColor3) },
+                    { "Theme.OverlayColor4", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayColor4) },
+                    { "Theme.OverlayForeColor", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayForeColor) },
+                    { "Theme.OverlayForeColor2", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayForeColor2) },
+                    { "Theme.OverlayForeColor3", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayForeColor3) },
+                    { "Theme.OverlayForeColor4", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayForeColor4) },
+                    { "Theme.ArtForeColor", HTAlt.Tools.ColorToHex(CurrentTheme.ArtForeColor) },
+                    { "Theme.ArtForeColor2", HTAlt.Tools.ColorToHex(CurrentTheme.ArtForeColor2) },
+                    { "Theme.ArtForeColor3", HTAlt.Tools.ColorToHex(CurrentTheme.ArtForeColor3) },
+                    { "Theme.ArtForeColor4", HTAlt.Tools.ColorToHex(CurrentTheme.ArtForeColor4) },
+                    { "Theme.ArtColor", HTAlt.Tools.ColorToHex(CurrentTheme.ArtColor) },
+                    { "Theme.ArtColor2", HTAlt.Tools.ColorToHex(CurrentTheme.ArtColor2) },
+                    { "Theme.ArtColor3", HTAlt.Tools.ColorToHex(CurrentTheme.ArtColor3) },
+                    { "Theme.ArtColor4", HTAlt.Tools.ColorToHex(CurrentTheme.ArtColor4) },
+                    { "Info.YorotVerText", VersionText },
+                    { "Info.YorotVer", "" + Version },
+                    { "Info.OperatingSystem", System.Runtime.InteropServices.RuntimeInformation.OSDescription },
+                    { "Info.Arch", System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture.ToString() },
+                    { "Info.CommandLineArgs", Environment.CommandLine },
+                    { "Info.UserAgent", CurrentUserAgent },
+                    { "Info.AppExePath", System.Reflection.Assembly.GetExecutingAssembly().Location },
+                    { "Info.ProfilePath", Profiles.Current.Path },
+                    { "Info.Language", CurrentLanguage.Name },
+                    { "Info.HTAltVer", HTAlt.HTInfo.ProjectVersion },
+                    { "Info.EngineVer", CurrentEngineVer },
+                    { "Info.DotNetVer", Environment.Version.ToString() },
+                    { "Info.FosterVer", FosterSettings.FosterVersion + "" },
+                    { "Info.FostrianVer", Assembly.GetAssembly(typeof(Fostrian.FostrianNode)).GetName().Version.ToString() },
+                    { "Info.Homepage", CurrentSettings.HomePage },
+                };
+                for (int i = 0; i < itArgs.Length / 2; i++)
+                {
+                    newstr = newstr.Replace("[" + itArgs[i, 0] + "]", itArgs[i, 1]);
+                }
+
+                if (args != null)
+                {
+                    for (int i = 0; i < args.Count; i++)
+                    {
+                        newstr = newstr.Replace("[Parameter." + args[i].Name + "]", sources[0].Url == "yorot://search" ? (CurrentSettings.SearchEngine.Search(args[i].Value)) : args[i].Value);
+                    }
                 }
                 newstr = CurrentLanguage.Prepare(newstr);
-                return new string[] { sources[0].Type };
+                return new string[] { newstr, sources[0].Type };
             }
             else
             {
@@ -227,20 +284,15 @@ namespace Yorot
             }
         }
 
-        public System.IO.Stream GetWebSource(string url, string[,] args, out string type)
-        {
-            var sources = _sources.FindAll(x => x.Url == url);
-            if (sources.Count > 0 && sources[0].Data is System.IO.Stream str)
-            {
-                type = sources[0].Type;
-                return str;
-            }
-            else
-            {
-                type = null;
-                return null;
-            }
-        }
+        /// <summary>
+        /// Current User Agent string, generated after <see cref="GetUserAgent(string, string)"/>.
+        /// </summary>
+        public string CurrentUserAgent { get; set; }
+
+        /// <summary>
+        /// Gets/sets current engine version.
+        /// </summary>
+        public virtual string CurrentEngineVer { get; set; }
 
         /// <summary>
         /// Current Branch of Yorot. (ex. Yorot-Avalonia)
@@ -338,11 +390,6 @@ namespace Yorot
         public ExtensionManager Extensions { get; set; }
 
         /// <summary>
-        /// Web Engines Manager
-        /// </summary>
-        public YorotWEManager WebEngineMan { get; set; }
-
-        /// <summary>
         /// Folder that contains the site icons.
         /// </summary>
         public string SiteIconCache { get; set; }
@@ -370,7 +417,6 @@ namespace Yorot
                 ThemeMan.Save();
                 LangMan.Save();
                 Extensions.Save();
-                WebEngineMan.Save();
                 Wolfhook.StopSearch();
             }
         }
@@ -439,16 +485,6 @@ namespace Yorot
         /// User profiles configuration file.
         /// </summary>
         public string ProfileConfig { get; set; }
-
-        /// <summary>
-        /// The location of the Web Engines configuration file on drive.
-        /// </summary>
-        public string WEConfig { get; set; }
-
-        /// <summary>
-        /// The location of the Web Engines folder on drive.
-        /// </summary>
-        public string WEFolder { get; set; }
 
         /// <summary>
         /// The location of the Exp. Packs manager configuration file on drive.

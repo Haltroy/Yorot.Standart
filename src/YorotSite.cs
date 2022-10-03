@@ -23,14 +23,24 @@ namespace Yorot
         public string Url { get; set; }
 
         /// <summary>
+        /// The Percentage of download.
+        /// </summary>
+        public float DownloadPercentage { get; set; }
+
+        /// <summary>
         /// Location on drive of site (probably Download manager site).
         /// </summary>
         public string FilePath { get; set; }
 
         /// <summary>
-        /// Status of the site (probably Download manager site).
+        /// Status of the site (probably Download Manager site).
         /// </summary>
         public YorotSiteStatus Status { get; set; }
+
+        /// <summary>
+        /// Actual download object provided by the web engine.
+        /// </summary>
+        public object EngineDownloadObject { get; set; }
 
         /// <summary>
         /// Error code of site (probably Download manager site).

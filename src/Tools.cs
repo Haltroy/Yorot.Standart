@@ -83,7 +83,6 @@ namespace Yorot
         public static string ShortenPath(this string path, YorotMain main)
         {
             return path.Replace(main.ProfilesFolder, "[PROFILES]")
-                .Replace(main.WEFolder, "[WEBENG]")
                 .Replace(main.ExtFolder, "[USEREXT]")
                 .Replace(main.LangFolder, "[USERLANG]")
                 .Replace(main.AppsFolder, "[USERAPPS]")
@@ -103,7 +102,6 @@ namespace Yorot
         public static string GetPath(this string path, YorotMain main)
         {
             return path.Replace("[PROFILES]", main.ProfilesFolder)
-                .Replace("[WEBENG]", main.WEFolder)
                 .Replace("[USEREXT]", main.ExtFolder)
                 .Replace("[USERLANG]", main.LangFolder)
                 .Replace("[USERAPPS]", main.AppsFolder)

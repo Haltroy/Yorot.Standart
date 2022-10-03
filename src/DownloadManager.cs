@@ -14,7 +14,7 @@ namespace Yorot
         { }
 
         /// <summary>
-        /// A List of previous downloads.
+        /// A list of downloads.
         /// </summary>
         public List<YorotSite> Downloads { get; set; } = new List<YorotSite>();
 

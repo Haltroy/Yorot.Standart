@@ -118,41 +118,6 @@ namespace Yorot
                                     }
                                     break;
 
-                                case "webengines":
-                                    for (int ı = 0; ı < node.ChildNodes.Count; ı++)
-                                    {
-                                        XmlNode subnode = node.ChildNodes[ı];
-                                        if (subnode.Name.ToLowerEnglish() == "engine")
-                                        {
-                                            if (subnode.Attributes["Name"] != null)
-                                            {
-                                                if (Profile.Manager.Main.WebEngineMan.WEExists(subnode.Attributes["Name"].Value))
-                                                {
-                                                    Profile.Manager.Main.WebEngineMan.Enable(subnode.Attributes["Name"].Value);
-                                                }
-                                                else
-                                                {
-                                                    Output.WriteLine("[Web Engine] Threw away \"" + subnode.OuterXml + "\". Web Engine does not exists.", LogLevel.Warning);
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if (!subnode.IsComment())
-                                                {
-                                                    Output.WriteLine("[Web Engine] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (!subnode.IsComment())
-                                            {
-                                                Output.WriteLine("[Web Engine] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
-                                            }
-                                        }
-                                    }
-                                    break;
-
                                 case "extensions":
                                     for (int ı = 0; ı < node.ChildNodes.Count; ı++)
                                     {
@@ -546,16 +511,7 @@ namespace Yorot
                 }
                 x += "</Extensions>" + Environment.NewLine;
             }
-            List<YorotWebEngine> enabledWE = Profile.Manager.Main.WebEngineMan.Engines.FindAll(it => it.isEnabled);
-            if (enabledWE.Count > 0)
-            {
-                x += "<WebEngines>" + Environment.NewLine;
-                foreach (YorotWebEngine engine in enabledWE)
-                {
-                    x += "<Engine Name=\"" + engine.CodeName + "\" />" + Environment.NewLine;
-                }
-                x += "</WebEngines>" + Environment.NewLine;
-            }
+
             List<YorotAppInfo> enabledApps = Profile.Manager.Main.AppMan.AppInfos.FindAll(it => it.isEnabled);
             if (enabledApps.Count > 0)
             {

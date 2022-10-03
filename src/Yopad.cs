@@ -338,10 +338,6 @@ namespace Yorot
                     case "languages":
                         addonWF = Main.LangFolder + addon.CodeName + System.IO.Path.DirectorySeparatorChar;
                         break;
-
-                    case "webengines":
-                        addonWF = Main.WEFolder + addon.CodeName + System.IO.Path.DirectorySeparatorChar;
-                        break;
                 }
                 // Create HTU if not exist
                 if (addon.AssocFoster == null)

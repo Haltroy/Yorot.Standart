@@ -52,6 +52,33 @@ namespace Yorot
         }
 
         /// <summary>
+        /// Gets all favorites with <paramref name="url"/>.
+        /// </summary>
+        /// <param name="url">URL to find.</param>
+        /// <param name="folder">Used for recursive search.</param>
+        /// <returns>A <see cref="List{T}"/> of <seealso cref="YorotFavorite"/>.</returns>
+        public List<YorotFavorite> GetFavorite(string url, YorotFavFolder folder = null)
+        {
+            var list = new List<YorotFavorite>();
+            for (int i = 0; i < (folder != null ? folder.Favorites.Count : Favorites.Count); i++)
+            {
+                var fav = folder != null ? folder.Favorites[i] : Favorites[i];
+                if (fav is YorotFavorite _fav)
+                {
+                    if (_fav.Url == url)
+                    {
+                        list.Add(_fav);
+                    }
+                }
+                else
+                {
+                    list.AddRange(GetFavorite(url, fav).ToArray());
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
         /// Gets if an URL is favorited by user.
         /// </summary>
         /// <param name="url">String</param>
@@ -180,6 +207,17 @@ namespace Yorot
                         break;
                 }
             }
+        }
+
+        public YorotFavFolder(FavMan manager, string name = "", string text = "")
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                name = HTAlt.Tools.GenerateRandomText(17);
+            }
+            Manager = manager;
+            Name = name;
+            Text = text;
         }
 
         /// <summary>
@@ -373,6 +411,12 @@ namespace Yorot
             {
                 Url = "yorot://error/?e=FAVORITE_MISSING_URL";
             }
+        }
+
+        public YorotFavorite(YorotFavFolder parentFolder, string url, string title = "") : base(parentFolder.Manager, "", title)
+        {
+            ParentFolder = parentFolder;
+            Url = url;
         }
 
         /// <summary>
