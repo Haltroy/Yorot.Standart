@@ -302,7 +302,7 @@ namespace Yorot
         {
             AppCodeName = appCodeName;
             Manager = manager;
-            string configFile = Manager.Main.AppsFolder + appCodeName + "\\app.ycf";
+            string configFile = Manager.Main.AppsFolder + appCodeName + System.IO.Path.DirectorySeparatorChar + "app.ycf";
             if (!string.IsNullOrWhiteSpace(configFile))
             {
                 if (System.IO.File.Exists(configFile))

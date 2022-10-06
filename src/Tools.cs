@@ -82,7 +82,9 @@ namespace Yorot
         /// <returns><see cref="string"/></returns>
         public static string ShortenPath(this string path, YorotMain main)
         {
-            return path.Replace(main.ProfilesFolder, "[PROFILES]")
+            return string.IsNullOrWhiteSpace(path)
+                ? path
+                : path.Replace(main.ProfilesFolder, "[PROFILES]")
                 .Replace(main.ExtFolder, "[USEREXT]")
                 .Replace(main.LangFolder, "[USERLANG]")
                 .Replace(main.AppsFolder, "[USERAPPS]")
@@ -120,8 +122,8 @@ namespace Yorot
         /// <returns><see cref="Image"/></returns>
         public static Icon GetSiteIcon(YorotSite site, YorotMain main)
         {
-            return File.Exists(main.AppPath + "\\favicons\\" + HTAlt.Tools.GetBaseURL(site.Url) + ".ico")
-? new Icon(main.AppPath + "\\favicons\\" + HTAlt.Tools.GetBaseURL(site.Url) + ".ico")
+            return File.Exists(main.AppPath + System.IO.Path.DirectorySeparatorChar + "favicons" + System.IO.Path.DirectorySeparatorChar + HTAlt.Tools.GetBaseURL(site.Url) + ".ico")
+? new Icon(main.AppPath + System.IO.Path.DirectorySeparatorChar + "favicons" + System.IO.Path.DirectorySeparatorChar + HTAlt.Tools.GetBaseURL(site.Url) + ".ico")
 : null;
         }
 
@@ -133,7 +135,7 @@ namespace Yorot
         /// <param name="main"><see cref="YorotMain"/></param>
         public static void SetSiteIcon(YorotSite site, Icon image, YorotMain main)
         {
-            using (FileStream fs = new FileStream(main.AppPath + "\\favicons\\" + HTAlt.Tools.GetBaseURL(site.Url) + ".ico", FileMode.Create))
+            using (FileStream fs = new FileStream(main.AppPath + System.IO.Path.DirectorySeparatorChar + "favicons" + System.IO.Path.DirectorySeparatorChar + HTAlt.Tools.GetBaseURL(site.Url) + ".ico", FileMode.Create))
             {
                 image.Save(fs);
             }

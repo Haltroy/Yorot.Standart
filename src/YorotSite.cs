@@ -53,6 +53,11 @@ namespace Yorot
         public DateTime Date { get; set; }
 
         /// <summary>
+        /// Determines if this site can show JS message boxes or not.
+        /// </summary>
+        public bool ShowMessageBoxes { get; set; } = true;
+
+        /// <summary>
         /// Permissions of this site.
         /// </summary>
         public YorotSitePermissions Permissions { get; set; }

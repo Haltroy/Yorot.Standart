@@ -216,7 +216,7 @@ namespace Yorot
         /// <summary>
         /// Full path of the profile directory.
         /// </summary>
-        public string Path => Manager.Main.ProfilesFolder + Name + "\\";
+        public string Path => Manager.Main.ProfilesFolder + Name + System.IO.Path.DirectorySeparatorChar;
 
         /// <summary>
         /// Settings of this profile.
@@ -236,12 +236,12 @@ namespace Yorot
         /// <summary>
         /// User Cache location.
         /// </summary>
-        public string CacheLoc => Name == "root" ? "" : Path + "cache\\";
+        public string CacheLoc => Name == "root" ? "" : Path + "cache" + System.IO.Path.DirectorySeparatorChar;
 
         /// <summary>
         /// Add-on main local file folder.
         /// </summary>
-        public string LocalLoc => Path + "local\\";
+        public string LocalLoc => Path + "local" + System.IO.Path.DirectorySeparatorChar;
 
         /// <summary>
         /// User settings location.

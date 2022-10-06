@@ -226,7 +226,7 @@ namespace Yorot
         /// <returns><see cref="string"/></returns>
         public virtual string ToXml()
         {
-            string x = "<Folder Name=\"" + Name.ToXML() + "\" Text=\"" + Text.ToXML() + "\" Icon=\"" + IconLoc.ToXML() + "\" >" + Environment.NewLine;
+            string x = "<Folder Name=\"" + Name.ToXML() + "\" Text=\"" + Text.ToXML() + "\" " + (IconLoc != null ? "Icon=\"" + IconLoc.ToXML() + "\"" : "") + " >" + Environment.NewLine;
             for (int i = 0; i < Favorites.Count; i++)
             {
                 x += Favorites[i].ToXml() + Environment.NewLine;

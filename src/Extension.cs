@@ -139,7 +139,7 @@ namespace Yorot
             if (!string.IsNullOrWhiteSpace(codeName))
             {
                 CodeName = codeName;
-                ManifestFile = extman.Main.ExtFolder + codeName + "\\ext.yem";
+                ManifestFile = extman.Main.ExtFolder + codeName + System.IO.Path.DirectorySeparatorChar + "ext.yem";
                 if (System.IO.File.Exists(ManifestFile))
                 {
                     XmlDocument doc = new XmlDocument();

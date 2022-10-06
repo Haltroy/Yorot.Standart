@@ -143,6 +143,24 @@ namespace Yorot
             }
         }
 
+        public YorotSite GetSite(string url)
+        {
+            string baseurl = new System.Uri(url).Authority;
+            var siteList = Sites.FindAll(it => it.Url == baseurl);
+            if (siteList.Count > 0)
+            {
+                return siteList[0];
+            }
+            else
+            {
+                YorotSite site = new YorotSite();
+                site.Manager = this;
+                site.Url = baseurl;
+                Sites.Add(site);
+                return site;
+            }
+        }
+
         public override string ToXml()
         {
             string x = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + Environment.NewLine +
