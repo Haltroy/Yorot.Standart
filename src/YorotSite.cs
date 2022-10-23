@@ -91,7 +91,7 @@ namespace Yorot
         /// <param name="startNotifOnBoot">Determines if Yorot should start notification listener on start for this site.</param>
         /// <param name="allowWE">Determines if this website can use Web Engines.</param>
         /// <param name="allowYS">Determines if this site can access Yorot Special.</param>
-        public YorotSitePermissions(YorotSite site, YorotPermissionMode allowMic, YorotPermissionMode allowCam, YorotPermissionMode allowNotif, int notifPriority, bool startNotifOnBoot, YorotPermissionMode allowWE, YorotPermissionMode allowYS)
+        public YorotSitePermissions(YorotSite site, YorotPermissionMode allowMic, YorotPermissionMode allowCam, YorotPermissionMode allowNotif, int notifPriority, bool startNotifOnBoot, YorotPermissionMode allowPopup, YorotPermissionMode allowYS)
         {
             Site = site;
             this.allowMic = new YorotPermission("allowMic", site, site.Manager.Main, allowMic);
@@ -99,7 +99,7 @@ namespace Yorot
             this.allowNotif = new YorotPermission("allowNotif", site, site.Manager.Main, allowNotif);
             this.notifPriority = notifPriority;
             this.startNotifOnBoot = startNotifOnBoot;
-            this.allowWE = new YorotPermission("allowWE", site, site.Manager.Main, allowWE);
+            this.allowPopup = new YorotPermission("allowPopup", site, site.Manager.Main, allowPopup);
             this.allowYS = new YorotPermission("allowYS", site, site.Manager.Main, allowYS);
         }
 
@@ -140,9 +140,9 @@ namespace Yorot
         public bool startNotifOnBoot { get; set; } = false;
 
         /// <summary>
-        /// Determines if this website can use Web Engines.
+        /// Determines if this website can use Pop-ups.
         /// </summary>
-        public YorotPermission allowWE { get; set; }
+        public YorotPermission allowPopup { get; set; }
 
         /// <summary>
         /// Determines if this site can access Yorot Special.

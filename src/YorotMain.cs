@@ -38,7 +38,8 @@ namespace Yorot
             Version = verno;
             if (string.IsNullOrWhiteSpace(appPath)) { throw new ArgumentNullException("\"appPath\" cannot be empty."); };
             if (!System.IO.Directory.Exists(appPath)) { System.IO.Directory.CreateDirectory(appPath); }
-            if (!appPath.HasWriteAccess()) { throw new System.IO.FileLoadException("Cannot access to path \"" + appPath + "\"."); }
+            // TODO: Fix this bug in HTAlt
+            //if (!appPath.HasWriteAccess()) { throw new System.IO.FileLoadException("Cannot access to path \"" + appPath + "\"."); }
             Incognito = isIncognito;
             AppPath = appPath;
             Cleanup = new Cleanup(this);
@@ -226,27 +227,27 @@ namespace Yorot
                 string newstr = str;
                 string[,] itArgs = new string[,]
                 {
-                    { "Theme.BackColor", HTAlt.Tools.ColorToHex(CurrentTheme.BackColor) },
-                    { "Theme.BackColor2", HTAlt.Tools.ColorToHex(CurrentTheme.BackColor2) },
-                    { "Theme.BackColor3", HTAlt.Tools.ColorToHex(CurrentTheme.BackColor3) },
-                    { "Theme.BackColor4", HTAlt.Tools.ColorToHex(CurrentTheme.BackColor4) },
-                    { "Theme.ForeColor", HTAlt.Tools.ColorToHex(CurrentTheme.ForeColor) },
-                    { "Theme.OverlayColor", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayColor) },
-                    { "Theme.OverlayColor2", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayColor2) },
-                    { "Theme.OverlayColor3", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayColor3) },
-                    { "Theme.OverlayColor4", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayColor4) },
-                    { "Theme.OverlayForeColor", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayForeColor) },
-                    { "Theme.OverlayForeColor2", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayForeColor2) },
-                    { "Theme.OverlayForeColor3", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayForeColor3) },
-                    { "Theme.OverlayForeColor4", HTAlt.Tools.ColorToHex(CurrentTheme.OverlayForeColor4) },
-                    { "Theme.ArtForeColor", HTAlt.Tools.ColorToHex(CurrentTheme.ArtForeColor) },
-                    { "Theme.ArtForeColor2", HTAlt.Tools.ColorToHex(CurrentTheme.ArtForeColor2) },
-                    { "Theme.ArtForeColor3", HTAlt.Tools.ColorToHex(CurrentTheme.ArtForeColor3) },
-                    { "Theme.ArtForeColor4", HTAlt.Tools.ColorToHex(CurrentTheme.ArtForeColor4) },
-                    { "Theme.ArtColor", HTAlt.Tools.ColorToHex(CurrentTheme.ArtColor) },
-                    { "Theme.ArtColor2", HTAlt.Tools.ColorToHex(CurrentTheme.ArtColor2) },
-                    { "Theme.ArtColor3", HTAlt.Tools.ColorToHex(CurrentTheme.ArtColor3) },
-                    { "Theme.ArtColor4", HTAlt.Tools.ColorToHex(CurrentTheme.ArtColor4) },
+                    { "Theme.BackColor", CurrentTheme.BackColor.ToHex() },
+                    { "Theme.BackColor2", CurrentTheme.BackColor2.ToHex() },
+                    { "Theme.BackColor3", CurrentTheme.BackColor3.ToHex() },
+                    { "Theme.BackColor4", CurrentTheme.BackColor4.ToHex() },
+                    { "Theme.ForeColor", CurrentTheme.ForeColor.ToHex() },
+                    { "Theme.OverlayColor", CurrentTheme.OverlayColor.ToHex() },
+                    { "Theme.OverlayColor2", CurrentTheme.OverlayColor2.ToHex() },
+                    { "Theme.OverlayColor3", CurrentTheme.OverlayColor3.ToHex() },
+                    { "Theme.OverlayColor4", CurrentTheme.OverlayColor4.ToHex() },
+                    { "Theme.OverlayForeColor", CurrentTheme.OverlayForeColor.ToHex() },
+                    { "Theme.OverlayForeColor2", CurrentTheme.OverlayForeColor2.ToHex() },
+                    { "Theme.OverlayForeColor3", CurrentTheme.OverlayForeColor3.ToHex() },
+                    { "Theme.OverlayForeColor4", CurrentTheme.OverlayForeColor4.ToHex() },
+                    { "Theme.ArtForeColor", CurrentTheme.ArtForeColor.ToHex() },
+                    { "Theme.ArtForeColor2", CurrentTheme.ArtForeColor2.ToHex() },
+                    { "Theme.ArtForeColor3", CurrentTheme.ArtForeColor3.ToHex() },
+                    { "Theme.ArtForeColor4", CurrentTheme.ArtForeColor4.ToHex() },
+                    { "Theme.ArtColor", CurrentTheme.ArtColor.ToHex() },
+                    { "Theme.ArtColor2", CurrentTheme.ArtColor2.ToHex() },
+                    { "Theme.ArtColor3", CurrentTheme.ArtColor3.ToHex() },
+                    { "Theme.ArtColor4", CurrentTheme.ArtColor4.ToHex() },
                     { "Info.YorotVerText", VersionText },
                     { "Info.YorotVer", "" + Version },
                     { "Info.OperatingSystem", System.Runtime.InteropServices.RuntimeInformation.OSDescription },

@@ -36,7 +36,7 @@ namespace Yorot
                         break;
 
                     default:
-                        if (!node.IsComment())
+                        if (!node.NodeIsComment())
                         {
                             Output.WriteLine("[ExpPackManager] Threw away \"" + node.OuterXml + "\", unsupported.");
                         }
@@ -146,7 +146,7 @@ namespace Yorot
                             break;
 
                         default:
-                            if (!node.IsComment()) { Output.WriteLine("[ExpPack] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning); }
+                            if (!node.NodeIsComment()) { Output.WriteLine("[ExpPack] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning); }
                             break;
                     }
                 }

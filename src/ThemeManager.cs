@@ -1,7 +1,6 @@
 ﻿using HTAlt;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -86,7 +85,7 @@ namespace Yorot
                                     break;
 
                                 default:
-                                    if (!subnode.IsComment())
+                                    if (!subnode.NodeIsComment())
                                     {
                                         Output.WriteLine("[ThemeMan] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                     }
@@ -96,7 +95,7 @@ namespace Yorot
                         break;
 
                     default:
-                        if (!node.IsComment())
+                        if (!node.NodeIsComment())
                         {
                             Output.WriteLine("[ThemeMan] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning);
                         }
@@ -167,12 +166,12 @@ namespace Yorot
             isDefaultTheme = true,
             Version = 1,
             ThumbLoc = @"YorotLight.png",
-            BackColor = Color.FromArgb(255, 255, 255, 255),
-            ForeColor = Color.FromArgb(255, 0, 0, 0),
-            OverlayColor = Color.FromArgb(255, 64, 128, 255),
-            ArtColor = Color.FromArgb(255, 235, 235, 235),
-            ArtForeColor = Color.FromArgb(255, 16, 16, 16),
-            OverlayForeColor = Color.FromArgb(255, 16, 16, 16),
+            BackColor = new YorotColor(255, 255, 255, 255),
+            ForeColor = new YorotColor(255, 0, 0, 0),
+            OverlayColor = new YorotColor(255, 64, 128, 255),
+            ArtColor = new YorotColor(255, 235, 235, 235),
+            ArtForeColor = new YorotColor(255, 16, 16, 16),
+            OverlayForeColor = new YorotColor(255, 16, 16, 16),
             Enabled = true,
         };
 
@@ -187,12 +186,12 @@ namespace Yorot
             isDefaultTheme = true,
             Version = 1,
             ThumbLoc = @"YorotStone.png",
-            BackColor = Color.FromArgb(255, 155, 155, 155),
-            ForeColor = Color.FromArgb(255, 0, 0, 0),
-            OverlayColor = Color.FromArgb(255, 64, 128, 255),
-            ArtColor = Color.FromArgb(255, 0, 0, 255),
-            ArtForeColor = Color.FromArgb(255, 255, 255, 255),
-            OverlayForeColor = Color.FromArgb(255, 205, 205, 205),
+            BackColor = new YorotColor(255, 155, 155, 155),
+            ForeColor = new YorotColor(255, 0, 0, 0),
+            OverlayColor = new YorotColor(255, 64, 128, 255),
+            ArtColor = new YorotColor(255, 0, 0, 255),
+            ArtForeColor = new YorotColor(255, 255, 255, 255),
+            OverlayForeColor = new YorotColor(255, 205, 205, 205),
             Enabled = true,
         };
 
@@ -207,12 +206,12 @@ namespace Yorot
             isDefaultTheme = true,
             Version = 1,
             ThumbLoc = @"YorotRazor.png",
-            BackColor = Color.FromArgb(255, 255, 255, 255),
-            ForeColor = Color.FromArgb(255, 0, 0, 0),
-            OverlayColor = Color.FromArgb(255, 102, 84, 160),
-            ArtColor = Color.FromArgb(255, 64, 32, 16),
-            ArtForeColor = Color.FromArgb(255, 205, 205, 205),
-            OverlayForeColor = Color.FromArgb(255, 205, 205, 205),
+            BackColor = new YorotColor(255, 255, 255, 255),
+            ForeColor = new YorotColor(255, 0, 0, 0),
+            OverlayColor = new YorotColor(255, 102, 84, 160),
+            ArtColor = new YorotColor(255, 64, 32, 16),
+            ArtForeColor = new YorotColor(255, 205, 205, 205),
+            OverlayForeColor = new YorotColor(255, 205, 205, 205),
             Enabled = true,
         };
 
@@ -227,12 +226,12 @@ namespace Yorot
             isDefaultTheme = true,
             Version = 1,
             ThumbLoc = @"YorotDark.png",
-            BackColor = Color.FromArgb(255, 0, 0, 0),
-            ForeColor = Color.FromArgb(255, 195, 195, 195),
-            OverlayColor = Color.FromArgb(255, 64, 128, 255),
-            ArtColor = Color.FromArgb(255, 64, 64, 64),
-            ArtForeColor = Color.FromArgb(255, 205, 205, 205),
-            OverlayForeColor = Color.FromArgb(255, 16, 16, 16),
+            BackColor = new YorotColor(255, 0, 0, 0),
+            ForeColor = new YorotColor(255, 195, 195, 195),
+            OverlayColor = new YorotColor(255, 64, 128, 255),
+            ArtColor = new YorotColor(255, 64, 64, 64),
+            ArtForeColor = new YorotColor(255, 205, 205, 205),
+            OverlayForeColor = new YorotColor(255, 16, 16, 16),
             Enabled = true,
         };
 
@@ -247,12 +246,12 @@ namespace Yorot
             isDefaultTheme = true,
             Version = 1,
             ThumbLoc = @"YorotShadow.png",
-            BackColor = Color.FromArgb(255, 32, 32, 32),
-            ForeColor = Color.FromArgb(255, 195, 195, 195),
-            OverlayColor = Color.FromArgb(255, 64, 128, 255),
-            ArtColor = Color.FromArgb(255, 32, 32, 32),
-            ArtForeColor = Color.FromArgb(255, 205, 205, 205),
-            OverlayForeColor = Color.FromArgb(255, 16, 16, 16),
+            BackColor = new YorotColor(255, 32, 32, 32),
+            ForeColor = new YorotColor(255, 195, 195, 195),
+            OverlayColor = new YorotColor(255, 64, 128, 255),
+            ArtColor = new YorotColor(255, 32, 32, 32),
+            ArtForeColor = new YorotColor(255, 205, 205, 205),
+            OverlayForeColor = new YorotColor(255, 16, 16, 16),
             Enabled = true,
         };
 
@@ -267,12 +266,12 @@ namespace Yorot
             isDefaultTheme = true,
             Version = 1,
             ThumbLoc = @"YorotDeepBlue.png",
-            BackColor = Color.FromArgb(255, 8, 0, 32),
-            ForeColor = Color.FromArgb(255, 64, 128, 255),
-            OverlayColor = Color.FromArgb(255, 0, 255, 196),
-            ArtColor = Color.FromArgb(255, 16, 8, 82),
-            ArtForeColor = Color.FromArgb(255, 0, 255, 196),
-            OverlayForeColor = Color.FromArgb(255, 64, 128, 255),
+            BackColor = new YorotColor("#080020"),
+            ForeColor = new YorotColor(255, 64, 128, 255),
+            OverlayColor = new YorotColor(255, 0, 255, 196),
+            ArtColor = new YorotColor(255, 16, 8, 82),
+            ArtForeColor = new YorotColor(255, 0, 255, 196),
+            OverlayForeColor = new YorotColor(255, 64, 128, 255),
             Enabled = true,
         };
     }
@@ -280,7 +279,7 @@ namespace Yorot
     /// <summary>
     /// Yorot Theme
     /// </summary>
-    public class YorotTheme : IEquatable<YorotTheme>
+    public partial class YorotTheme : IEquatable<YorotTheme>
     {
         /// <summary>
         /// Creates a new Yorot theme. This constructor does not initializes the theme.
@@ -337,31 +336,31 @@ namespace Yorot
                                 break;
 
                             case "backcolor":
-                                BackColor = node.InnerXml.XmlToString().HexToColor();
+                                BackColor = new YorotColor(node.InnerXml.XmlToString());
                                 break;
 
                             case "forecolor":
-                                ForeColor = node.InnerXml.XmlToString().ToLowerEnglish() == "auto" ? HTAlt.Tools.AutoWhiteBlack(BackColor) : node.InnerXml.XmlToString().HexToColor();
+                                ForeColor = node.InnerXml.XmlToString().ToLowerEnglish() == "auto" ? BackColor.AutoWhiteBlack : new YorotColor(node.InnerXml.XmlToString());
                                 break;
 
                             case "overlaycolor":
-                                OverlayColor = node.InnerXml.XmlToString().HexToColor();
+                                OverlayColor = new YorotColor(node.InnerXml.XmlToString());
                                 break;
 
                             case "overlayforecolor":
-                                OverlayForeColor = node.InnerXml.XmlToString().ToLowerEnglish() == "auto" ? HTAlt.Tools.AutoWhiteBlack(BackColor) : node.InnerXml.XmlToString().HexToColor();
+                                OverlayForeColor = node.InnerXml.XmlToString().ToLowerEnglish() == "auto" ? OverlayColor.AutoWhiteBlack : new YorotColor(node.InnerXml.XmlToString());
                                 break;
 
                             case "artcolor":
-                                ArtColor = node.InnerXml.XmlToString().HexToColor();
+                                ArtColor = new YorotColor(node.InnerXml.XmlToString());
                                 break;
 
                             case "artforecolor":
-                                ArtColor = node.InnerXml.XmlToString().ToLowerEnglish() == "auto" ? HTAlt.Tools.AutoWhiteBlack(BackColor) : node.InnerXml.XmlToString().HexToColor();
+                                ArtColor = node.InnerXml.XmlToString().ToLowerEnglish() == "auto" ? ArtColor.AutoWhiteBlack : new YorotColor(node.InnerXml.XmlToString());
                                 break;
 
                             default:
-                                if (!node.IsComment())
+                                if (!node.NodeIsComment())
                                 {
                                     Output.WriteLine("[Theme:\"" + Config + "\"] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning);
                                 }
@@ -420,12 +419,12 @@ namespace Yorot
                    ThumbLoc == other.ThumbLoc &&
                    Config == other.Config &&
                    isDefaultTheme == other.isDefaultTheme &&
-                   EqualityComparer<Color>.Default.Equals(BackColor, other.BackColor) &&
-                   EqualityComparer<Color>.Default.Equals(ForeColor, other.ForeColor) &&
-                   EqualityComparer<Color>.Default.Equals(OverlayColor, other.OverlayColor) &&
-                   EqualityComparer<Color>.Default.Equals(OverlayForeColor, other.OverlayForeColor) &&
-                   EqualityComparer<Color>.Default.Equals(ArtColor, other.ArtColor) &&
-                   EqualityComparer<Color>.Default.Equals(ArtForeColor, other.ArtForeColor) &&
+                   EqualityComparer<YorotColor>.Default.Equals(BackColor, other.BackColor) &&
+                   EqualityComparer<YorotColor>.Default.Equals(ForeColor, other.ForeColor) &&
+                   EqualityComparer<YorotColor>.Default.Equals(OverlayColor, other.OverlayColor) &&
+                   EqualityComparer<YorotColor>.Default.Equals(OverlayForeColor, other.OverlayForeColor) &&
+                   EqualityComparer<YorotColor>.Default.Equals(ArtColor, other.ArtColor) &&
+                   EqualityComparer<YorotColor>.Default.Equals(ArtForeColor, other.ArtForeColor) &&
                    Enabled == other.Enabled;
         }
 
@@ -499,108 +498,108 @@ namespace Yorot
         /// <summary>
         /// Background Color
         /// </summary>
-        public System.Drawing.Color BackColor { get; set; }
+        public YorotColor BackColor { get; set; }
 
         /// <summary>
         /// A little brighter/darker <see cref="BackColor"/>.
         /// </summary>
-        public Color BackColor2 => BackColor.ShiftBrightness(20, false);
+        public YorotColor BackColor2 => BackColor.ShiftBrightness(20, false);
 
         /// <summary>
         /// Brighter/darker <see cref="BackColor"/>.
         /// </summary>
-        public Color BackColor3 => BackColor.ShiftBrightness(40, false);
+        public YorotColor BackColor3 => BackColor.ShiftBrightness(40, false);
 
         /// <summary>
         /// More brighter/darker <see cref="BackColor"/>.
         /// </summary>
-        public Color BackColor4 => BackColor.ShiftBrightness(60, false);
+        public YorotColor BackColor4 => BackColor.ShiftBrightness(60, false);
 
         /// <summary>
         /// The foreground color, determines the text and button images colors.
         /// </summary>
-        public System.Drawing.Color ForeColor { get; set; }
+        public YorotColor ForeColor { get; set; }
 
         /// <summary>
         /// The overlay color, determines the edges etc.
         /// </summary>
-        public System.Drawing.Color OverlayColor { get; set; }
+        public YorotColor OverlayColor { get; set; }
 
         /// <summary>
         /// A little brighter/darker <see cref="OverlayColor"/>.
         /// </summary>
-        public System.Drawing.Color OverlayColor2 => OverlayColor.ShiftBrightness(20, false);
+        public YorotColor OverlayColor2 => OverlayColor.ShiftBrightness(20, false);
 
         /// <summary>
         /// Brighter/darker <see cref="OverlayColor"/>.
         /// </summary>
-        public System.Drawing.Color OverlayColor3 => OverlayColor.ShiftBrightness(40, false);
+        public YorotColor OverlayColor3 => OverlayColor.ShiftBrightness(40, false);
 
         /// <summary>
         /// More brighter/darker <see cref="OverlayColor"/>.
         /// </summary>
-        public System.Drawing.Color OverlayColor4 => OverlayColor.ShiftBrightness(60, false);
+        public YorotColor OverlayColor4 => OverlayColor.ShiftBrightness(60, false);
 
         /// <summary>
         /// Fore color for <see cref="OverlayColor"/>.
         /// </summary>
-        public Color OverlayForeColor { get; set; }
+        public YorotColor OverlayForeColor { get; set; }
 
         /// <summary>
         /// A little brighter/darker <see cref="OverlayForeColor"/>.
         /// </summary>
 
-        public Color OverlayForeColor2 => OverlayForeColor.ShiftBrightness(20, false);
+        public YorotColor OverlayForeColor2 => OverlayForeColor.ShiftBrightness(20, false);
 
         /// <summary>
         /// Brighter/darker <see cref="OverlayForeColor"/>.
         /// </summary>
-        public Color OverlayForeColor3 => OverlayForeColor.ShiftBrightness(40, false);
+        public YorotColor OverlayForeColor3 => OverlayForeColor.ShiftBrightness(40, false);
 
         /// <summary>
         /// More brighter/darker <see cref="OverlayForeColor"/>.
         /// </summary>
-        public Color OverlayForeColor4 => OverlayForeColor.ShiftBrightness(60, false);
+        public YorotColor OverlayForeColor4 => OverlayForeColor.ShiftBrightness(60, false);
 
         /// <summary>
         /// Artiliary color, similar to <see cref="OverlayColor"/>
         /// </summary>
-        public System.Drawing.Color ArtColor { get; set; }
+        public YorotColor ArtColor { get; set; }
 
         /// <summary>
         /// A little brighter/darker <see cref="ArtColor"/>.
         /// </summary>
-        public Color ArtColor2 => ArtColor.ShiftBrightness(20, false);
+        public YorotColor ArtColor2 => ArtColor.ShiftBrightness(20, false);
 
         /// <summary>
         /// Brighter/darker <see cref="ArtColor"/>.
         /// </summary>
-        public Color ArtColor3 => ArtColor.ShiftBrightness(40, false);
+        public YorotColor ArtColor3 => ArtColor.ShiftBrightness(40, false);
 
         /// <summary>
         /// More brighter/darker <see cref="ArtColor"/>.
         /// </summary>
-        public Color ArtColor4 => ArtColor.ShiftBrightness(60, false);
+        public YorotColor ArtColor4 => ArtColor.ShiftBrightness(60, false);
 
         /// <summary>
         /// Fore Color for <see cref="ArtColor"/>
         /// </summary>
-        public Color ArtForeColor { get; set; }
+        public YorotColor ArtForeColor { get; set; }
 
         /// <summary>
         /// A little brighter/darker <see cref="ArtForeColor"/>.
         /// </summary>
-        public Color ArtForeColor2 => ArtForeColor.ShiftBrightness(20, false);
+        public YorotColor ArtForeColor2 => ArtForeColor.ShiftBrightness(20, false);
 
         /// <summary>
         /// Brighter/darker <see cref="ArtForeColor"/>.
         /// </summary>
-        public Color ArtForeColor3 => ArtForeColor.ShiftBrightness(40, false);
+        public YorotColor ArtForeColor3 => ArtForeColor.ShiftBrightness(40, false);
 
         /// <summary>
         /// More brighter/darker <see cref="ArtForeColor"/>.
         /// </summary>
-        public Color ArtForeColor4 => ArtForeColor.ShiftBrightness(60, false);
+        public YorotColor ArtForeColor4 => ArtForeColor.ShiftBrightness(60, false);
 
         /// <summary>
         /// Determines if this theme is enabled or disabled by user or the system.

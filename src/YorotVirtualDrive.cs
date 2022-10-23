@@ -93,11 +93,6 @@ namespace Yorot
             return bytes.ToArray();
         }
 
-        public System.Drawing.Bitmap ToBitmap()
-        {
-            return new System.Drawing.Bitmap(ContentStream);
-        }
-
         public YorotProfile FileOwner { get; }
         public YorotFileChecksum[] FileChecksums { get; set; }
 
@@ -193,7 +188,7 @@ namespace Yorot
 
         public bool Verify()
         {
-            return HTAlt.Tools.VerifyFile(Algorithm, File.ContentStream, Hash);
+            return HTAlt.Tools.VerifyFile(File.ContentStream, Algorithm, Hash);
         }
     }
 

@@ -118,7 +118,7 @@ namespace Yorot
                             }
                             else
                             {
-                                if (!subnode.IsComment())
+                                if (!subnode.NodeIsComment())
                                 {
                                     Output.WriteLine("[AppMan] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                 }
@@ -127,7 +127,7 @@ namespace Yorot
                         break;
 
                     default:
-                        if (!node.IsComment())
+                        if (!node.NodeIsComment())
                         {
                             Output.WriteLine("[AppMan] Threw away \"" + node.OuterXml + "\". Invalid configurtion.", LogLevel.Warning);
                         }
@@ -505,7 +505,7 @@ namespace Yorot
         /// <summary>
         /// Returns app size in bytes.
         /// </summary>+
-        public long AppSize => AppFolder.GetDirectorySize();
+        public long AppSize => HTAlt.Tools.GetDirSize(AppFolder);
 
         /// <summary>
         /// Gets size of app.

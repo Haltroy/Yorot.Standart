@@ -153,7 +153,7 @@ namespace Yorot
                             }
                             else
                             {
-                                if (!subnode.IsComment())
+                                if (!subnode.NodeIsComment())
                                 {
                                     Output.WriteLine("[LangMan] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                 }
@@ -162,7 +162,7 @@ namespace Yorot
                         break;
 
                     default:
-                        if (!node.IsComment())
+                        if (!node.NodeIsComment())
                         {
                             Output.WriteLine("[LangMan] Threw away \"" + node.OuterXml + "\". Invalid configurtion.", LogLevel.Warning);
                         }
@@ -421,7 +421,7 @@ namespace Yorot
                                                     break;
 
                                                 default:
-                                                    if (!subnode.IsComment())
+                                                    if (!subnode.NodeIsComment())
                                                     {
                                                         Output.WriteLine("[LangManager] Threw away \"" + subnode.OuterXml + "\", unsupported format for #YOROT-ROOT.", LogLevel.Warning);
                                                     }
@@ -446,7 +446,7 @@ namespace Yorot
                             break;
                         }
                     default:
-                        if (!node.IsComment()) Output.WriteLine("[LangManager] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning);
+                        if (!node.NodeIsComment()) Output.WriteLine("[LangManager] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning);
                         break;
                 }
             }

@@ -44,7 +44,7 @@ namespace Yorot
                 }
                 else
                 {
-                    if (!node.IsComment())
+                    if (!node.NodeIsComment())
                     {
                         Output.WriteLine("[ExtMan] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning);
                     }
@@ -245,7 +245,7 @@ namespace Yorot
                                             break;
 
                                         default:
-                                            if (!subnode.IsComment())
+                                            if (!subnode.NodeIsComment())
                                             {
                                                 Output.WriteLine("[Extension:\"" + CodeName + "\"] Threw away \"" + subnode.OuterXml + "\", unsupported.");
                                             }
@@ -328,7 +328,7 @@ namespace Yorot
                                 break;
 
                             default:
-                                if (!node.IsComment())
+                                if (!node.NodeIsComment())
                                 {
                                     Output.WriteLine("[Extension:\"" + CodeName + "\"] Threw away \"" + node.OuterXml + "\", unsupported.");
                                 }
@@ -440,7 +440,7 @@ namespace Yorot
         /// <summary>
         /// Returns extension size in bytes.
         /// </summary>+
-        public long ExtSize => (Manager.Main.AppsFolder + CodeName).GetDirectorySize();
+        public long ExtSize => (Manager.Main.AppsFolder + CodeName).GetDirSize();
 
         /// <summary>
         /// Gets size of extension.

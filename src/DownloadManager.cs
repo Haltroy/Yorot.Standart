@@ -90,7 +90,7 @@ namespace Yorot
                         break;
 
                     default:
-                        if (!node.IsComment())
+                        if (!node.NodeIsComment())
                         {
                             Output.WriteLine("[DownloadManager] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning);
                         }

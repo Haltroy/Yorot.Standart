@@ -86,7 +86,7 @@ namespace Yorot
                                                 }
                                                 else
                                                 {
-                                                    if (!subnode.IsComment())
+                                                    if (!subnode.NodeIsComment())
                                                     {
                                                         Output.WriteLine("[SearchEngine] Threw away \"" + subnode.OuterXml + "\". Search Engine already exists.", LogLevel.Warning);
                                                     }
@@ -94,7 +94,7 @@ namespace Yorot
                                             }
                                             else
                                             {
-                                                if (!subnode.IsComment())
+                                                if (!subnode.NodeIsComment())
                                                 {
                                                     Output.WriteLine("[SearchEngine] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                                 }
@@ -102,7 +102,7 @@ namespace Yorot
                                         }
                                         else
                                         {
-                                            if (!subnode.IsComment())
+                                            if (!subnode.NodeIsComment())
                                             {
                                                 Output.WriteLine("[SearchEngine] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                             }
@@ -142,7 +142,7 @@ namespace Yorot
                                             }
                                             else
                                             {
-                                                if (!subnode.IsComment())
+                                                if (!subnode.NodeIsComment())
                                                 {
                                                     Output.WriteLine("[Extensions] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                                 }
@@ -150,7 +150,7 @@ namespace Yorot
                                         }
                                         else
                                         {
-                                            if (!subnode.IsComment())
+                                            if (!subnode.NodeIsComment())
                                             {
                                                 Output.WriteLine("[Extensions] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                             }
@@ -177,7 +177,7 @@ namespace Yorot
                                             }
                                             else
                                             {
-                                                if (!subnode.IsComment())
+                                                if (!subnode.NodeIsComment())
                                                 {
                                                     Output.WriteLine("[Extensions] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                                 }
@@ -185,7 +185,7 @@ namespace Yorot
                                         }
                                         else
                                         {
-                                            if (!subnode.IsComment())
+                                            if (!subnode.NodeIsComment())
                                             {
                                                 Output.WriteLine("[Extensions] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                             }
@@ -220,7 +220,7 @@ namespace Yorot
                                             }
                                             else
                                             {
-                                                if (!subnode.IsComment())
+                                                if (!subnode.NodeIsComment())
                                                 {
                                                     Output.WriteLine("[Extensions] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                                 }
@@ -228,7 +228,7 @@ namespace Yorot
                                         }
                                         else
                                         {
-                                            if (!subnode.IsComment())
+                                            if (!subnode.NodeIsComment())
                                             {
                                                 Output.WriteLine("[Extensions] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                             }
@@ -267,7 +267,7 @@ namespace Yorot
                                             }
                                             else
                                             {
-                                                if (!subnode.IsComment())
+                                                if (!subnode.NodeIsComment())
                                                 {
                                                     Output.WriteLine("[Apps] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                                 }
@@ -275,7 +275,7 @@ namespace Yorot
                                         }
                                         else
                                         {
-                                            if (!subnode.IsComment())
+                                            if (!subnode.NodeIsComment())
                                             {
                                                 Output.WriteLine("[Apps] Threw away \"" + subnode.OuterXml + "\". unsupported.", LogLevel.Warning);
                                             }
@@ -422,7 +422,7 @@ namespace Yorot
                                     break;
 
                                 default:
-                                    if (!node.IsComment())
+                                    if (!node.NodeIsComment())
                                     {
                                         Output.WriteLine("[Settings] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning);
                                     }

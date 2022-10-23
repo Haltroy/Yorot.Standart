@@ -92,11 +92,11 @@ namespace Yorot
                                             }
                                             break;
 
-                                        case "allowwe":
-                                            YorotPermissionMode allowWE;
-                                            if (Enum.TryParse(siteNode.InnerXml.XmlToString(), out allowWE))
+                                        case "allowpopup":
+                                            YorotPermissionMode allowPopup;
+                                            if (Enum.TryParse(siteNode.InnerXml.XmlToString(), out allowPopup))
                                             {
-                                                site.Permissions.allowWE.Allowance = allowWE;
+                                                site.Permissions.allowPopup.Allowance = allowPopup;
                                             }
                                             else
                                             {
@@ -134,7 +134,7 @@ namespace Yorot
                         break;
 
                     default:
-                        if (!node.IsComment())
+                        if (!node.NodeIsComment())
                         {
                             Output.WriteLine("[SiteMan] Threw away \"" + node.OuterXml + "\", invalid configuration.", LogLevel.Warning);
                         }
@@ -200,7 +200,7 @@ namespace Yorot
                     + "</allowNotif>"
                     + Environment.NewLine
                     + "<allowWE>"
-                    + site.Permissions.allowWE.Allowance.ToString()
+                    + site.Permissions.allowPopup.Allowance.ToString()
                     + "</allowWE>"
                     + Environment.NewLine
                     + "<allowYS>"

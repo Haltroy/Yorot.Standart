@@ -207,7 +207,7 @@ namespace Yorot
                                     break;
 
                                 default:
-                                    if (!node.IsComment())
+                                    if (!node.NodeIsComment())
                                     {
                                         YopadLog(this, new OnLogEntryEventArgs("[" + repo.CodeName + "] Threw out \"" + node.OuterXml + "\", unsupported.", LibFoster.LogLevel.Warning));
                                     }
@@ -457,7 +457,7 @@ namespace Yorot
                             }
                             else
                             {
-                                if (!subnode.IsComment())
+                                if (!subnode.NodeIsComment())
                                 {
                                     Output.WriteLine("[Yopad] Threw away \"" + subnode.OuterXml + "\". unsupported.", HTAlt.LogLevel.Warning);
                                 }
@@ -499,7 +499,7 @@ namespace Yorot
                             }
                             else
                             {
-                                if (!subnode.IsComment())
+                                if (!subnode.NodeIsComment())
                                 {
                                     Output.WriteLine("[Yopad] Threw away \"" + subnode.OuterXml + "\". unsupported.", HTAlt.LogLevel.Warning);
                                 }
@@ -508,7 +508,7 @@ namespace Yorot
                         break;
 
                     default:
-                        if (!node.IsComment())
+                        if (!node.NodeIsComment())
                         {
                             Output.WriteLine("[Yopad] Threw away \"" + node.OuterXml + "\". Invalid configurtion.", HTAlt.LogLevel.Warning);
                         }
@@ -746,7 +746,7 @@ namespace Yorot
                             var _name = subnode.Name.ToLowerEnglish();
                             if (applied.Contains(_name))
                             {
-                                if (!node.IsComment())
+                                if (!node.NodeIsComment())
                                 {
                                     Yopad.Throw(this, "[" + Repository.CodeName + ":" + Name + "] Threw \"" + subnode.OuterXml + "\", duplicate property.", LibFoster.LogLevel.Warning);
                                 }
@@ -767,7 +767,7 @@ namespace Yorot
                                     break;
 
                                 default:
-                                    if (!node.IsComment())
+                                    if (!node.NodeIsComment())
                                     {
                                         Yopad.Throw(this, "[" + Repository.CodeName + ":" + Name + "] Threw \"" + subnode.OuterXml + "\", invalid property.", LibFoster.LogLevel.Warning);
                                     }
@@ -780,7 +780,7 @@ namespace Yorot
                         }
                         else
                         {
-                            if (!node.IsComment())
+                            if (!node.NodeIsComment())
                             {
                                 Yopad.Throw(this, "[" + Repository.CodeName + ":" + Name + "] Threw \"" + node.OuterXml + "\", missing information(s).", LibFoster.LogLevel.Warning);
                             }
@@ -788,7 +788,7 @@ namespace Yorot
                     }
                     else
                     {
-                        if (!node.IsComment())
+                        if (!node.NodeIsComment())
                         {
                             Yopad.Throw(this, "[" + Repository.CodeName + ":" + Name + "] Threw \"" + node.OuterXml + "\", missing URL.", LibFoster.LogLevel.Warning);
                         }
@@ -796,7 +796,7 @@ namespace Yorot
                 }
                 else
                 {
-                    if (!node.IsComment())
+                    if (!node.NodeIsComment())
                     {
                         Yopad.Throw(this, "[" + Repository.CodeName + ":" + Name + "] Threw \"" + node.OuterXml + "\", invalid entry.", LibFoster.LogLevel.Warning);
                     }
@@ -939,12 +939,7 @@ namespace Yorot
             AddonList.Url.Replace("[0]", Url + (!Url.EndsWith("\\") || !Url.EndsWith("/") ? "\\" : "") + "7.png"),
             AddonList.Url.Replace("[0]", Url + (!Url.EndsWith("\\") || !Url.EndsWith("/") ? "\\" : "") + "8.png"),
             AddonList.Url.Replace("[0]", Url + (!Url.EndsWith("\\") || !Url.EndsWith("/") ? "\\" : "") + "9.png"),
-            };
-
-        /// <summary>
-        /// An array containing all screenshots.
-        /// </summary>
-        public System.Drawing.Image[] Screenshots { get; set; }
+        };
 
         /// <summary>
         /// The Add-on that associated with this Yopad add-on.

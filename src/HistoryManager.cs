@@ -85,7 +85,7 @@ namespace Yorot
                         break;
 
                     default:
-                        if (!node.IsComment())
+                        if (!node.NodeIsComment())
                         {
                             Output.WriteLine("[HistoryMan] Threw away \"" + node.OuterXml + "\", invalid configuration.", LogLevel.Warning);
                         }

@@ -125,23 +125,23 @@ namespace Yorot
                             XmlNode subnode = node.ChildNodes[i];
                             switch (subnode.Name.ToLowerEnglish())
                             {
-                                case "Favorite":
-                                    Favorites.Add(new YorotFavorite(node) { Manager = this });
+                                case "favorite":
+                                    Favorites.Add(new YorotFavorite(this, subnode) { Manager = this });
                                     break;
 
                                 case "folder":
-                                    Favorites.Add(new YorotFavFolder(node) { Manager = this });
+                                    Favorites.Add(new YorotFavFolder(this, subnode) { Manager = this });
                                     break;
 
                                 default:
-                                    if (!subnode.IsComment()) { Output.WriteLine("[FavMan] Threw away \"" + subnode.OuterXml + "\", unsupported."); }
+                                    if (!subnode.NodeIsComment()) { Output.WriteLine("[FavMan] Threw away \"" + subnode.OuterXml + "\", unsupported."); }
                                     break;
                             }
                         }
                         break;
 
                     default:
-                        if (!node.IsComment())
+                        if (!node.NodeIsComment())
                         {
                             Output.WriteLine("[FavMan] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning);
                         }
@@ -160,8 +160,9 @@ namespace Yorot
         /// Creates a new Yorot Favorite Folder.
         /// </summary>
         /// <param name="node">XML node associated with this folder.</param>
-        public YorotFavFolder(XmlNode node)
+        public YorotFavFolder(FavMan favman, XmlNode node)
         {
+            Manager = favman ?? throw new ArgumentNullException(nameof(favman));
             // NAME
             if (node.Attributes["Name"] != null)
             {
@@ -192,18 +193,18 @@ namespace Yorot
             for (int i = 0; i < node.ChildNodes.Count; i++)
             {
                 XmlNode subnode = node.ChildNodes[i];
-                switch (node.Name)
+                switch (subnode.Name)
                 {
                     case "Favorite":
-                        Favorites.Add(new YorotFavorite(subnode) { Manager = Manager });
+                        Favorites.Add(new YorotFavorite(Manager, subnode) { Manager = Manager });
                         break;
 
                     case "Folder":
-                        Favorites.Add(new YorotFavFolder(subnode) { Manager = Manager });
+                        Favorites.Add(new YorotFavFolder(Manager, subnode) { Manager = Manager });
                         break;
 
                     default:
-                        if (!subnode.IsComment()) { Output.WriteLine("[FavMan] Threw away \"" + subnode.OuterXml + "\", unsupported.", LogLevel.Warning); }
+                        if (!subnode.NodeIsComment()) { Output.WriteLine("[FavMan] Threw away \"" + subnode.OuterXml + "\", unsupported.", LogLevel.Warning); }
                         break;
                 }
             }
@@ -215,7 +216,7 @@ namespace Yorot
             {
                 name = HTAlt.Tools.GenerateRandomText(17);
             }
-            Manager = manager;
+            Manager = manager ?? throw new ArgumentNullException(nameof(manager));
             Name = name;
             Text = text;
         }
@@ -263,11 +264,6 @@ namespace Yorot
         /// Easy-to-read version of icon.
         /// </summary>
         public string IconLoc { get => iconLoc.ShortenPath(Manager.Main); set => iconLoc = value.GetPath(Manager.Main); }
-
-        /// <summary>
-        /// Gets folder/favorite icon.
-        /// </summary>
-        public System.Drawing.Image Icon => HTAlt.Tools.ReadFile(iconLoc, System.Drawing.Imaging.ImageFormat.Png);
 
         /// <summary>
         /// Moves folder/favorite in <paramref name="oi"/> to <paramref name="ni"/>.
@@ -374,7 +370,7 @@ namespace Yorot
         /// Creates a new Yorot Favorite.
         /// </summary>
         /// <param name="node">XML node associated with this favorite.</param>
-        public YorotFavorite(XmlNode node) : base(node)
+        public YorotFavorite(FavMan favman, XmlNode node) : base(favman, node)
         {
             // NAME
             if (node.Attributes["Name"] != null)
@@ -403,6 +399,7 @@ namespace Yorot
             {
                 IconLoc = "";
             }
+            // URL
             if (node.Attributes["Url"] != null)
             {
                 Url = node.Attributes["Url"].Value.XmlToString();
@@ -425,7 +422,7 @@ namespace Yorot
         /// <returns><see cref="string"/></returns>
         public override string ToXml()
         {
-            return "<Favorite Name=\"" + Name.ToXML() + "\" Text=\"" + Text.ToXML() + "\" Icon=\"" + IconLoc.ToXML() + "\" Url=\"" + Url.ToXML() + "\" />";
+            return "<Favorite Name=\"" + Name.ToXML() + "\" Text=\"" + Text.ToXML() + "\" " + (!string.IsNullOrWhiteSpace(IconLoc) ? "Icon=\"" + IconLoc.ToXML() + "\" " : "") + "Url=\"" + Url.ToXML() + "\" />";
         }
 
         /// <summary>

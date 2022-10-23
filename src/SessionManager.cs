@@ -64,7 +64,7 @@ namespace Yorot
 
         public void GoBack()
         {
-            if (CanGoBack())
+            if (CanGoBack)
             {
                 SkipAdd = true;
                 SelectedIndex -= 1;
@@ -75,7 +75,7 @@ namespace Yorot
 
         public void GoForward()
         {
-            if (CanGoForward())
+            if (CanGoForward)
             {
                 SkipAdd = true;
                 SelectedIndex += 1;
@@ -127,7 +127,7 @@ namespace Yorot
                 return;
             }
             if (SkipAdd) { SkipAdd = false; return; }
-            if (CanGoForward() && SelectedIndex + 1 < Sessions.Count)
+            if (CanGoForward && SelectedIndex + 1 < Sessions.Count)
             {
                 if (!Session.Equals(Sessions[SelectedIndex]))
                 {
@@ -183,12 +183,15 @@ namespace Yorot
             }
         }
 
-        public bool CanGoBack()
+        public bool CanGoBack
         {
-            return CanGoBack(SelectedSession);
+            get
+            {
+                return SessionCanGoBack(SelectedSession);
+            }
         }
 
-        public bool CanGoBack(Session Session)
+        public bool SessionCanGoBack(Session Session)
         {
             if (Session is null)
             {
@@ -202,12 +205,15 @@ namespace Yorot
             return current > 0;
         }
 
-        public bool CanGoForward()
+        public bool CanGoForward
         {
-            return CanGoForward(SelectedSession);
+            get
+            {
+                return SessionCanGoForward(SelectedSession);
+            }
         }
 
-        public bool CanGoForward(Session Session)
+        public bool SessionCanGoForward(Session Session)
         {
             if (Session is null)
             {

@@ -112,7 +112,7 @@ namespace Yorot
                                     break;
 
                                 default:
-                                    if (!subnode.IsComment()) { Output.WriteLine("[Profiles] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning); }
+                                    if (!subnode.NodeIsComment()) { Output.WriteLine("[Profiles] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning); }
                                     break;
                             }
                         }
@@ -120,7 +120,7 @@ namespace Yorot
                         break;
 
                     default:
-                        if (!node.IsComment()) { Output.WriteLine("[Profiles] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning); }
+                        if (!node.NodeIsComment()) { Output.WriteLine("[Profiles] Threw away \"" + node.OuterXml + "\", unsupported.", LogLevel.Warning); }
                         break;
                 }
             }
@@ -224,9 +224,9 @@ namespace Yorot
         public Settings Settings { get; set; }
 
         /// <summary>
-        /// Profile picture of this profile.
+        /// Path of profile picture of this profile.
         /// </summary>
-        public System.Drawing.Image Picture { get => HTAlt.Tools.ReadFile(Path + "picture.png", System.Drawing.Imaging.ImageFormat.Png); set => HTAlt.Tools.WriteFile(Path + "picture.png", value, System.Drawing.Imaging.ImageFormat.Png); }
+        public string PicturePath => Path + "picture.png";
 
         /// <summary>
         /// Manager of this profile.

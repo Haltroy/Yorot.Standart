@@ -68,7 +68,7 @@ namespace Yorot
                 id = HTAlt.Tools.GenerateRandomText(17);
             }
             if (LogWork) { Output.WriteLine("<WOLFHOOK> Created message=\"" + message + "\" from ID=\"" + id + "\" without error(s).", LogLevel.Info); }
-            message.WriteToFile(WhFolder + id + ".wh", DefaultEncoding);
+            message.WriteFile(WhFolder + id + ".wh", DefaultEncoding);
         }
 
         private bool StopTask { get; set; } = false;

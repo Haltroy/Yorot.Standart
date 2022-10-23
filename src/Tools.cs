@@ -10,32 +10,6 @@ namespace Yorot
     public static class Tools
     {
         /// <summary>
-        /// Generates <see cref="Image"/> from <paramref name="baseIcon"/>.
-        /// </summary>
-        /// <param name="baseIcon"></param>
-        /// <returns></returns>
-        public static System.Drawing.Image GenerateAppIcon(System.Drawing.Image baseIcon, System.Drawing.Color? BackColor = null, int squareSize = 64)
-        {
-            if (BackColor == null)
-            {
-                BackColor = System.Drawing.Color.FromArgb(255, 128, 128, 128);
-            }
-            int sqHalfSize = squareSize / 2;
-            int sqQuartSize = sqHalfSize / 2;
-            System.Drawing.Bitmap bm = new System.Drawing.Bitmap(64, 64);
-            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(bm))
-            {
-                g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-                g.FillRectangle(new System.Drawing.SolidBrush(BackColor.Value), 0, 0, squareSize, squareSize);
-                System.Drawing.Image iconimg = HTAlt.Tools.ResizeImage(baseIcon, sqHalfSize, sqHalfSize);
-                g.DrawImage(iconimg, new System.Drawing.Rectangle(sqQuartSize, sqQuartSize, sqHalfSize, sqHalfSize));
-            }
-            return bm;
-        }
-
-        /// <summary>
         /// Determines if we passed a date.
         /// </summary>
         /// <param name="date"><see cref="DateTime"/></param>
@@ -108,37 +82,23 @@ namespace Yorot
                 .Replace("[USERLANG]", main.LangFolder)
                 .Replace("[USERAPPS]", main.AppsFolder)
                 .Replace("[USERTHEME]", main.ThemesFolder)
-                .Replace("[USERCACHE]", main.Profiles.Current.CacheLoc)
+                //.Replace("[USERCACHE]", main.Profiles.Current.CacheLoc) // Disabled for now.
                 .Replace("[LOGS]", main.LogFolder)
-                .Replace("[USER]", main.Profiles.Current.Path)
+                //.Replace("[USER]", main.Profiles.Current.Path) // Disabled for now.
                 .Replace("[APPPATH]", main.AppPath);
         }
 
         /// <summary>
-        /// Gets the <paramref name="site"/> icon. Can return null.
+        /// Returns either <paramref name="black"/> or <paramref name="white"/> by determining with the brightess of <paramref name="color"/>.
         /// </summary>
-        /// <param name="site"><see cref="YorotSite"/></param>
-        /// <param name="main"><see cref="YorotMain"/></param>
-        /// <returns><see cref="Image"/></returns>
-        public static Icon GetSiteIcon(YorotSite site, YorotMain main)
+        /// <param name="color">Color for determining.</param>
+        /// <param name="white">White/Bright object to return.</param>
+        /// <param name="black">Black/Dark object  to return</param>
+        /// <param name="reverse"><sse cref=true"/> to return <paramref name="black"/> on black/dark object and <paramref name="white"/> for white/bright object, otherwise <sse cref=false"/>.</param>
+        /// <returns><paramref name="black"/> or <paramref name="white"/>.</returns>
+        public static object SelectObjectFromColor(this YorotColor color, ref object white, ref object black, bool reverse = false)
         {
-            return File.Exists(main.AppPath + System.IO.Path.DirectorySeparatorChar + "favicons" + System.IO.Path.DirectorySeparatorChar + HTAlt.Tools.GetBaseURL(site.Url) + ".ico")
-? new Icon(main.AppPath + System.IO.Path.DirectorySeparatorChar + "favicons" + System.IO.Path.DirectorySeparatorChar + HTAlt.Tools.GetBaseURL(site.Url) + ".ico")
-: null;
-        }
-
-        /// <summary>
-        /// Sets the <paramref name="site"/> image.
-        /// </summary>
-        /// <param name="site"><see cref="YorotSite"/></param>
-        /// <param name="image">Favicon</param>
-        /// <param name="main"><see cref="YorotMain"/></param>
-        public static void SetSiteIcon(YorotSite site, Icon image, YorotMain main)
-        {
-            using (FileStream fs = new FileStream(main.AppPath + System.IO.Path.DirectorySeparatorChar + "favicons" + System.IO.Path.DirectorySeparatorChar + HTAlt.Tools.GetBaseURL(site.Url) + ".ico", FileMode.Create))
-            {
-                image.Save(fs);
-            }
+            return color.IsBright ? (reverse ? white : black) : (reverse ? black : white);
         }
     }
 }
