@@ -92,6 +92,18 @@ namespace Yorot
                                             }
                                             break;
 
+                                        case "allowcookie":
+                                            YorotPermissionMode allowCookies;
+                                            if (Enum.TryParse(siteNode.InnerXml.XmlToString(), out allowCookies))
+                                            {
+                                                site.Permissions.allowCookies.Allowance = allowCookies;
+                                            }
+                                            else
+                                            {
+                                                Output.WriteLine("[SiteMan] Threw away \"" + siteNode.OuterXml + "\" in site \"" + (string.IsNullOrWhiteSpace(site.Url) ? "AnonymousSite" : site.Url) + "\",  unrecognized format.", LogLevel.Warning);
+                                            }
+                                            break;
+
                                         case "allowpopup":
                                             YorotPermissionMode allowPopup;
                                             if (Enum.TryParse(siteNode.InnerXml.XmlToString(), out allowPopup))
@@ -156,6 +168,7 @@ namespace Yorot
                 YorotSite site = new YorotSite();
                 site.Manager = this;
                 site.Url = baseurl;
+                site.Permissions = new YorotSitePermissions(site);
                 Sites.Add(site);
                 return site;
             }
@@ -194,6 +207,10 @@ namespace Yorot
                     + "<allowCam>"
                     + site.Permissions.allowCam.Allowance.ToString()
                     + "</allowCam>"
+                    + Environment.NewLine
+                    + "<allowCookie>"
+                    + site.Permissions.allowCookies.Allowance.ToString()
+                    + "</allowCookie>"
                     + Environment.NewLine
                     + "<allowNotif>"
                     + site.Permissions.allowNotif.Allowance.ToString()

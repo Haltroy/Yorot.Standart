@@ -1,25 +1,154 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
+using HTAlt;
 
 namespace Yorot
 {
+    public class SessionManager : YorotManager
+    {
+        public SessionManager(string configFile, YorotMain main) : base(configFile, main)
+        {
+            Autosave();
+        }
+
+        /// <summary>
+        /// Determines the autosave interval in milliseconds.
+        /// </summary>
+        public int AutosaveTimer { get; set; } = 5000;
+
+        public override void ExtractXml(XmlNode rootNode)
+        {
+            List<string> appliedSettings = new List<string>();
+            for (int i = 0; i < rootNode.ChildNodes.Count; i++)
+            {
+                XmlNode node = rootNode.ChildNodes[i];
+                if (appliedSettings.Contains(node.Name.ToLowerEnglish()))
+                {
+                    Output.WriteLine("[SessionMan] Threw away \"" + node.OuterXml + "\", configuration already applied.", LogLevel.Warning);
+                    break;
+                }
+                appliedSettings.Add(node.Name.ToLowerEnglish());
+                switch (node.Name.ToLowerEnglish())
+                {
+                    case "sessions":
+                        for (int ı = 0; ı < node.ChildNodes.Count; ı++)
+                        {
+                            XmlNode subnode = node.ChildNodes[ı];
+                            if (subnode.Name.ToLowerEnglish() == "session")
+                            {
+                                var site = new YorotSite() { Manager = this };
+                                for (int _i = 0; _i < subnode.ChildNodes.Count; _i++)
+                                {
+                                    var siteNode = subnode.ChildNodes[_i];
+                                    Systems.Add(new SessionSystem(this, siteNode));
+                                }
+                            }
+                            else
+                            {
+                                Output.WriteLine("[SessionMan] Threw away \"" + subnode.OuterXml + "\", unsupported.", LogLevel.Warning);
+                            }
+                        }
+                        break;
+
+                    case "autosave":
+                        if (node.InnerXml.XmlToString() == "true")
+                        {
+                            PreviousShutdownWasSafe = false;
+                        }
+                        break;
+
+                    case "interval":
+                        AutosaveTimer = int.Parse(node.InnerXml.XmlToString());
+                        break;
+
+                    default:
+                        if (!node.NodeIsComment())
+                        {
+                            Output.WriteLine("[SessionMan] Threw away \"" + node.OuterXml + "\", invalid configuration.", LogLevel.Warning);
+                        }
+                        break;
+                }
+            }
+        }
+
+        public override string ToXml()
+        {
+            string x = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + Environment.NewLine +
+    "<root>" + Environment.NewLine +
+    "<!-- Yorot Session Config File" + Environment.NewLine + Environment.NewLine +
+    "This file is used to save site settings." + Environment.NewLine +
+    "Editing this file might cause problems with Yorot sessions." + Environment.NewLine +
+    "-->" + Environment.NewLine +
+    "<AutoSave>" + (_autosave ? "true" : "false") + "</AutoSave>" + Environment.NewLine +
+    "<Interval>" + AutosaveTimer + "</Interval>" + Environment.NewLine +
+    "<Sessions>" + Environment.NewLine;
+            for (int i = 0; i < Systems.Count; i++)
+            {
+                SessionSystem site = Systems[i];
+                x += site.XmlOut();
+            }
+            return (x + "</Sessions>" + Environment.NewLine + "</root>").BeautifyXML();
+        }
+
+        public SessionSystem GenerateNew(string xml = null)
+        {
+            SessionSystem system = new SessionSystem(this, xml);
+            Systems.Add(system);
+            return system;
+        }
+
+        public List<SessionSystem> Systems { get; set; } = new List<SessionSystem>();
+
+        /// <summary>
+        /// Determines if the previous shutdow was safely done. If not, then you can ask user if they want to restore the last session.
+        /// </summary>
+        public bool PreviousShutdownWasSafe { get; set; } = true;
+
+        private bool _autosave = true;
+        private bool _stop = false;
+
+        public void StopAutoSave()
+        { _stop = true; }
+
+        public async void Autosave()
+        {
+            await Task.Run(async () =>
+            {
+                if (!_stop)
+                {
+                    System.Threading.Thread.Sleep(AutosaveTimer);
+                    Save();
+                    await Task.Run(() => { Autosave(); });
+                }
+            });
+        }
+
+        public void Shutdown()
+        {
+            _autosave = false;
+            Save();
+        }
+    }
+
     public class SessionSystem
     {
-        public SessionSystem(YorotMain main, string XMLCode)
+        public SessionSystem(SessionManager man, string XMLCode)
         {
-            if (main == null) { throw new ArgumentNullException(nameof(main)); }
-            Main = main;
+            if (man == null) { throw new ArgumentNullException(nameof(man)); }
+            Manager = man;
             if (!string.IsNullOrWhiteSpace(XMLCode))
             {
                 XmlDocument document = new XmlDocument();
                 document.LoadXml(XMLCode);
-                XmlNode workNode = document.FirstChild;
-                if (document.FirstChild.Name.ToLower() == "xml") { workNode = document.FirstChild.NextSibling; }
-                if (workNode.Attributes["Index"] != null)
+                XmlNode workNode = document.DocumentElement;
+                if (workNode.Attributes["Index"] != null && workNode.Attributes["IsDead"] != null && workNode.Attributes["Date"] != null)
                 {
                     int si = Convert.ToInt32(workNode.Attributes["Index"].Value);
+                    IsDead = workNode.Attributes["IsDead"].Value == "true";
+                    Date = YorotDateAndTime.DMY.ShortToDateTime(workNode.Attributes["Date"].Value);
                     foreach (XmlNode node in workNode.ChildNodes)
                     {
                         if (node.Name.ToLower() == "sessionsite")
@@ -36,20 +165,46 @@ namespace Yorot
             }
         }
 
-        public SessionSystem(YorotMain main) : this(main, "")
+        public SessionSystem(SessionManager man, XmlNode workNode)
+        {
+            if (man == null) { throw new ArgumentNullException(nameof(man)); }
+            if (workNode == null) { throw new ArgumentNullException(nameof(workNode)); }
+            if (workNode.Attributes["Index"] != null && workNode.Attributes["IsDead"] != null && workNode.Attributes["Date"] != null)
+            {
+                int si = Convert.ToInt32(workNode.Attributes["Index"].Value);
+                IsDead = workNode.Attributes["IsDead"].Value == "true";
+                Date = Manager.Main.CurrentSettings.DateFormat.ShortToDateTime(workNode.Attributes["Date"].Value);
+                foreach (XmlNode node in workNode.ChildNodes)
+                {
+                    if (node.Name.ToLower() == "sessionsite")
+                    {
+                        if (node.Attributes["Url"] != null && node.Attributes["Title"] != null)
+                        {
+                            Sessions.Add(new Session(node.Attributes["Url"].Value, node.Attributes["Tİtle"].Value));
+                        }
+                    }
+                }
+                SelectedIndex = si;
+                SelectedSession = Sessions[si];
+            }
+        }
+
+        public SessionSystem(SessionManager man) : this(man, "")
         {
         }
 
-        public YorotMain Main { get; set; }
+        public DateTime? Date { get; set; }
+        public SessionManager Manager { get; set; }
+        public bool IsDead { get; set; } = false;
 
         private List<Session> _Sessions = new List<Session>();
 
         public string XmlOut()
         {
-            string x = "<Session Index=\"" + SelectedIndex + "\" >" + Environment.NewLine;
+            string x = $"<Session Index=\"{SelectedIndex}\" IsDead=\"{(IsDead ? "true" : "false")}\" Date=\"{YorotDateAndTime.DMY.GetShortName(Date ?? DateTime.Today)}\" >{Environment.NewLine}";
             for (int i = 0; i < Sessions.Count; i++)
             {
-                x += "<SessionSite Url=\"" + Sessions[i].Url + "\" Title=\"" + Sessions[i].Title + "\" >" + Environment.NewLine;
+                x += $"<SessionSite Url=\"{Sessions[i].Url}\" Title=\"{Sessions[i].Title}\" />{Environment.NewLine}";
             }
             return x + "</Session>";
         }
@@ -122,7 +277,7 @@ namespace Yorot
             {
                 throw new ArgumentNullException("\"Session\" was null.");
             }
-            if (Main.GetWebSource(Session.Url) is YorotBrowserWebSource websrc && websrc.IgnoreOnSessionList)
+            if (Manager.Main.GetWebSource(Session.Url) is YorotBrowserWebSource websrc && websrc.IgnoreOnSessionList)
             {
                 return;
             }

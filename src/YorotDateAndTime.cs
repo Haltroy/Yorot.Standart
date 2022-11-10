@@ -41,6 +41,8 @@ namespace Yorot
             return new YorotDateAndTime(Name, ShortFormat, LongFormat);
         }
 
+        public DateTime ShortToDateTime(string shortdate) => DateTime.ParseExact(shortdate, ShortFormat, null);
+
         /// <summary>
         /// Converts <paramref name="dateTime"/> to short format.
         /// </summary>

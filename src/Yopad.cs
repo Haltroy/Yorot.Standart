@@ -331,10 +331,6 @@ namespace Yorot
                         addonWF = Main.ExtFolder + addon.CodeName + System.IO.Path.DirectorySeparatorChar;
                         break;
 
-                    case "exppacks":
-                        addonWF = Main.EPFolder + addon.CodeName + System.IO.Path.DirectorySeparatorChar;
-                        break;
-
                     case "languages":
                         addonWF = Main.LangFolder + addon.CodeName + System.IO.Path.DirectorySeparatorChar;
                         break;

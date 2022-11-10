@@ -38,8 +38,7 @@ namespace Yorot
             Version = verno;
             if (string.IsNullOrWhiteSpace(appPath)) { throw new ArgumentNullException("\"appPath\" cannot be empty."); };
             if (!System.IO.Directory.Exists(appPath)) { System.IO.Directory.CreateDirectory(appPath); }
-            // TODO: Fix this bug in HTAlt
-            //if (!appPath.HasWriteAccess()) { throw new System.IO.FileLoadException("Cannot access to path \"" + appPath + "\"."); }
+            if (!appPath.HasWriteAccess()) { throw new System.IO.FileLoadException("Cannot access to path \"" + appPath + "\"."); }
             Incognito = isIncognito;
             AppPath = appPath;
             Cleanup = new Cleanup(this);
@@ -61,8 +60,6 @@ namespace Yorot
             AppsFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "apps" + System.IO.Path.DirectorySeparatorChar;
             ProfilesFolder = AppPath + "user" + System.IO.Path.DirectorySeparatorChar;
             ProfileConfig = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "users.ycf";
-            EPMConfig = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "exp.ycf";
-            EPFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "exp" + System.IO.Path.DirectorySeparatorChar;
             SiteIconCache = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "icons" + System.IO.Path.DirectorySeparatorChar;
             LogFolder = AppPath + "logs" + System.IO.Path.DirectorySeparatorChar;
             TempFolder = AppPath + "temp" + System.IO.Path.DirectorySeparatorChar;
@@ -90,8 +87,6 @@ namespace Yorot
                         AppsFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "apps" + System.IO.Path.DirectorySeparatorChar;
                         ProfilesFolder = AppPath + "user" + System.IO.Path.DirectorySeparatorChar;
                         ProfileConfig = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "users.ycf";
-                        EPMConfig = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "exp.ycf";
-                        EPFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "exp" + System.IO.Path.DirectorySeparatorChar;
                         LogFolder = AppPath + "logs" + System.IO.Path.DirectorySeparatorChar;
                         TempFolder = AppPath + "temp" + System.IO.Path.DirectorySeparatorChar;
                         WHFolder = AppPath + "temp" + System.IO.Path.DirectorySeparatorChar + "wh" + System.IO.Path.DirectorySeparatorChar;
@@ -117,7 +112,6 @@ namespace Yorot
             if (!System.IO.Directory.Exists(ThemesFolder)) { System.IO.Directory.CreateDirectory(ThemesFolder); }
             if (!System.IO.Directory.Exists(AppsFolder)) { System.IO.Directory.CreateDirectory(AppsFolder); }
             if (!System.IO.Directory.Exists(ProfilesFolder)) { System.IO.Directory.CreateDirectory(ProfilesFolder); }
-            if (!System.IO.Directory.Exists(EPFolder)) { System.IO.Directory.CreateDirectory(EPFolder); }
             if (!System.IO.Directory.Exists(TempFolder)) { System.IO.Directory.CreateDirectory(TempFolder); }
             if (!System.IO.Directory.Exists(WHFolder)) { System.IO.Directory.CreateDirectory(WHFolder); }
             BeforeInit();
@@ -127,10 +121,18 @@ namespace Yorot
             LangMan = new YorotLangManager(this);
             Extensions = new ExtensionManager(this);
             Profiles = new ProfileManager(this);
-            ExpPackManager = new EPManager(this);
             Wolfhook = new Wolfhook(WHFolder);
+            if (Profiles.Profiles.Count < 2 && Profiles.Profiles.FindAll(it => it.Name == "root").Count > 0)
+            {
+                OOBE = true;
+            }
             AfterInit();
         }
+
+        /// <summary>
+        /// Determines if Out-of-Box-Experience should be displayed, or in laymans term: user's first time running Yorot.
+        /// </summary>
+        public bool OOBE { get; set; } = false;
 
         /// <summary>
         /// Gets the user agent string for your application with specific <paramref name="engineversion"/>.
@@ -396,11 +398,6 @@ namespace Yorot
         public string SiteIconCache { get; set; }
 
         /// <summary>
-        /// Experience Packs Manager
-        /// </summary>
-        public EPManager ExpPackManager { get; set; }
-
-        /// <summary>
         /// Wolfhook Content Delivery System
         /// </summary>
         public Wolfhook Wolfhook { get; set; }
@@ -408,11 +405,14 @@ namespace Yorot
         /// <summary>
         /// Saves configuration and shuts down.
         /// </summary>
-        public void Shutdown()
+        public void Shutdown(bool forceSave = false)
         {
-            if (!Incognito)
+            if (!Incognito || forceSave)
             {
                 Profiles.Current.Settings.Save();
+                Profiles.Current.Settings.FavManager.Save();
+                Profiles.Current.Settings.SessionManager.Shutdown();
+                Profiles.Current.Settings.DownloadManager.Save();
                 Profiles.Save();
                 AppMan.Save();
                 ThemeMan.Save();
@@ -486,16 +486,6 @@ namespace Yorot
         /// User profiles configuration file.
         /// </summary>
         public string ProfileConfig { get; set; }
-
-        /// <summary>
-        /// The location of the Exp. Packs manager configuration file on drive.
-        /// </summary>
-        public string EPMConfig { get; set; }
-
-        /// <summary>
-        /// The location of the Exp. Packs folder on drive.
-        /// </summary>
-        public string EPFolder { get; set; }
 
         /// <summary>
         /// Logs folder.

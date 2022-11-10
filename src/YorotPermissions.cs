@@ -43,7 +43,14 @@
         public YorotPermissionMode Allowance
         {
             get => allowance;
-            set => allowance = allowance == value ? allowance : Main.OnPermissionRequest(this, value);
+            set
+            {
+                allowance =
+                    allowance == value ?
+                    allowance
+                    :
+                    Main.OnPermissionRequest(this, value);
+            }
         }
     }
 

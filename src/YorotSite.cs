@@ -72,7 +72,7 @@ namespace Yorot
         /// Creates a new <see cref="YorotSitePermissions"/> with default values.
         /// </summary>
         /// <param name="site"><see cref="YorotSite"/></param>
-        public YorotSitePermissions(YorotSite site) : this(site, YorotPermissionMode.None, YorotPermissionMode.None, YorotPermissionMode.None, 0, false, YorotPermissionMode.None, YorotPermissionMode.None) { }
+        public YorotSitePermissions(YorotSite site) : this(site, YorotPermissionMode.None, YorotPermissionMode.None, YorotPermissionMode.None, YorotPermissionMode.Allow, 0, false, YorotPermissionMode.None, YorotPermissionMode.None) { }
 
         /// <summary>
         /// Creates a new <see cref="YorotSitePermissions"/> with custom values.
@@ -91,12 +91,13 @@ namespace Yorot
         /// <param name="startNotifOnBoot">Determines if Yorot should start notification listener on start for this site.</param>
         /// <param name="allowWE">Determines if this website can use Web Engines.</param>
         /// <param name="allowYS">Determines if this site can access Yorot Special.</param>
-        public YorotSitePermissions(YorotSite site, YorotPermissionMode allowMic, YorotPermissionMode allowCam, YorotPermissionMode allowNotif, int notifPriority, bool startNotifOnBoot, YorotPermissionMode allowPopup, YorotPermissionMode allowYS)
+        public YorotSitePermissions(YorotSite site, YorotPermissionMode allowMic, YorotPermissionMode allowCam, YorotPermissionMode allowNotif, YorotPermissionMode allowCookies, int notifPriority, bool startNotifOnBoot, YorotPermissionMode allowPopup, YorotPermissionMode allowYS)
         {
             Site = site;
             this.allowMic = new YorotPermission("allowMic", site, site.Manager.Main, allowMic);
             this.allowCam = new YorotPermission("allowCam", site, site.Manager.Main, allowCam);
             this.allowNotif = new YorotPermission("allowNotif", site, site.Manager.Main, allowNotif);
+            this.allowCookies = new YorotPermission("allowCookies", site, site.Manager.Main, allowCookies);
             this.notifPriority = notifPriority;
             this.startNotifOnBoot = startNotifOnBoot;
             this.allowPopup = new YorotPermission("allowPopup", site, site.Manager.Main, allowPopup);
@@ -117,6 +118,11 @@ namespace Yorot
         /// Determines if the camera can be used by this site.
         /// </summary>
         public YorotPermission allowCam { get; set; }
+
+        /// <summary>
+        /// Determines if this site can use cookies.
+        /// </summary>
+        public YorotPermission allowCookies { get; set; }
 
         /// <summary>
         /// Determines if this site can send notifications.

@@ -17,9 +17,14 @@ namespace Yorot
         public ProfileManager(YorotMain main) : base(main.ProfileConfig, main)
         {
             Profiles.Add(DefaultProfiles.Root(this).CreateCarbonCopy());
+            Profiles.Add(DefaultProfiles.IncognitoUser(this).CreateCarbonCopy());
             if (Current is null)
             {
                 Current = Profiles.FindAll(it => it.Name == "root")[0];
+            }
+            if (Main.Incognito)
+            {
+                Current = Profiles.FindAll(it => it.Name == "incognito")[0];
             }
         }
 
@@ -147,6 +152,11 @@ namespace Yorot
             return new YorotProfile("root", "Root", man)
             { };
         }
+
+        public static YorotProfile IncognitoUser(ProfileManager man)
+        {
+            return new YorotProfile("incognito", "Incognito", man) { };
+        }
     }
 
     /// <summary>
@@ -176,7 +186,7 @@ namespace Yorot
             Name = name;
             if (string.IsNullOrWhiteSpace(text)) { throw new ArgumentNullException(nameof(text)); }
             Text = text;
-            if (name != "root" && !System.IO.Directory.Exists(CacheLoc)) { System.IO.Directory.CreateDirectory(CacheLoc); }
+            if (name != "root" && name != "incognito" && !System.IO.Directory.Exists(CacheLoc)) { System.IO.Directory.CreateDirectory(CacheLoc); }
             if (!System.IO.Directory.Exists(Path))
             {
                 System.IO.Directory.CreateDirectory(Path);
@@ -236,7 +246,7 @@ namespace Yorot
         /// <summary>
         /// User Cache location.
         /// </summary>
-        public string CacheLoc => Name == "root" ? "" : Path + "cache" + System.IO.Path.DirectorySeparatorChar;
+        public string CacheLoc => (Name == "root" || Name == "incognito") ? "" : Path + "cache" + System.IO.Path.DirectorySeparatorChar;
 
         /// <summary>
         /// Add-on main local file folder.

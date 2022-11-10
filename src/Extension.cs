@@ -185,6 +185,39 @@ namespace Yorot
                                 Popup = node.InnerXml.XmlToString();
                                 break;
 
+                            case "launch":
+                                switch (node.InnerXml.XmlToString().ToLowerEnglish())
+                                {
+                                    case "raw":
+                                        PopupLaunchMode = YorotExtensionLaunchMode.Raw;
+                                        break;
+
+                                    case "file":
+                                        PopupLaunchMode = YorotExtensionLaunchMode.FromFile;
+                                        break;
+
+                                    case "raw-tab":
+                                        PopupLaunchMode = YorotExtensionLaunchMode.TabRaw;
+                                        break;
+
+                                    case "file-tab":
+                                        PopupLaunchMode = YorotExtensionLaunchMode.TabFile;
+                                        break;
+
+                                    case "raw-popup":
+                                        PopupLaunchMode = YorotExtensionLaunchMode.PopupRaw;
+                                        break;
+
+                                    case "file-popup":
+                                        PopupLaunchMode = YorotExtensionLaunchMode.PopupFile;
+                                        break;
+
+                                    case "appforms":
+                                        PopupLaunchMode = YorotExtensionLaunchMode.AppForms;
+                                        break;
+                                }
+                                break;
+
                             case "startup":
                                 Startup = node.InnerXml.XmlToString();
                                 break;
@@ -313,6 +346,36 @@ namespace Yorot
                                                     Output.WriteLine("[Extensions] Threw away \"" + subnode.OuterXml + "\", unsupported Right-Click Option.");
                                                     continue;
                                             }
+                                            switch (subnode.Attributes["Launch"].Value.ToLowerEnglish())
+                                            {
+                                                case "raw":
+                                                    rcoption.LaunchMode = YorotExtensionLaunchMode.Raw;
+                                                    break;
+
+                                                case "file":
+                                                    rcoption.LaunchMode = YorotExtensionLaunchMode.FromFile;
+                                                    break;
+
+                                                case "raw-tab":
+                                                    rcoption.LaunchMode = YorotExtensionLaunchMode.TabRaw;
+                                                    break;
+
+                                                case "file-tab":
+                                                    rcoption.LaunchMode = YorotExtensionLaunchMode.TabFile;
+                                                    break;
+
+                                                case "raw-popup":
+                                                    rcoption.LaunchMode = YorotExtensionLaunchMode.PopupRaw;
+                                                    break;
+
+                                                case "file-popup":
+                                                    rcoption.LaunchMode = YorotExtensionLaunchMode.PopupFile;
+                                                    break;
+
+                                                case "appforms":
+                                                    rcoption.LaunchMode = YorotExtensionLaunchMode.AppForms;
+                                                    break;
+                                            }
                                             if (subnode.Attributes["Icon"] != null)
                                             {
                                                 rcoption.Icon = subnode.Attributes["Icon"].Value.XmlToString().GetPath(Manager.Main);
@@ -403,6 +466,11 @@ namespace Yorot
         public string Popup { get; set; }
 
         /// <summary>
+        /// Determines the launch mode for <see cref="Popup"/>.
+        /// </summary>
+        public YorotExtensionLaunchMode PopupLaunchMode { get; set; }
+
+        /// <summary>
         /// Script to run on Yorot startup.
         /// </summary>
         public string Startup { get; set; }
@@ -479,6 +547,47 @@ namespace Yorot
     }
 
     /// <summary>
+    /// Modes that can be used to launch Extension Pop-up menu or Right-click options.
+    /// </summary>
+    public enum YorotExtensionLaunchMode
+    {
+        /// <summary>
+        /// Runs raw JS code in current tab or launches raw HTML page in extension menu.
+        /// </summary>
+        Raw,
+
+        /// <summary>
+        /// Runs code from file in tab or launches the file in extension menu.
+        /// </summary>
+        FromFile,
+
+        /// <summary>
+        /// Runs raw JS code in a new tab or launches raw HTML page in a new tab.
+        /// </summary>
+        TabRaw,
+
+        /// <summary>
+        /// Runs JS code from file in a new tab or launches HTML page from file in a new tab.
+        /// </summary>
+        TabFile,
+
+        /// <summary>
+        /// Runs raw JS code in a pop-up window or launches raw HTML page in a pop-up window.
+        /// </summary>
+        PopupRaw,
+
+        /// <summary>
+        /// Runs JS code from file in a pop-up window or launches HTML page from file in a pop-up window.
+        /// </summary>
+        PopupFile,
+
+        /// <summary>
+        /// Launches an <see cref="AppForms"/>.
+        /// </summary>
+        AppForms
+    }
+
+    /// <summary>
     /// Right-click options.
     /// </summary>
     public class YorotExtensionRCOption
@@ -502,6 +611,11 @@ namespace Yorot
         /// Determines when to display this item.
         /// </summary>
         public RightClickOptionStyle Option { get; set; }
+
+        /// <summary>
+        /// Determines the launch mode of this option.
+        /// </summary>
+        public YorotExtensionLaunchMode LaunchMode { get; set; }
     }
 
     /// <summary>

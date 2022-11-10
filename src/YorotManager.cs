@@ -95,6 +95,10 @@ namespace Yorot
         /// </summary>
         public void Save()
         {
+            if (!System.IO.File.Exists(ConfigFile))
+            {
+                System.IO.File.Create(ConfigFile).Close();
+            }
             HTAlt.Tools.WriteFile(ConfigFile, ToXml(), Encoding.Unicode);
         }
 

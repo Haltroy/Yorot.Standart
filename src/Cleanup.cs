@@ -61,7 +61,7 @@ namespace Yorot
         {
             if (force || ClearHistory)
             {
-                Main.CurrentSettings.HistoryManager.Sites.Clear();
+                Main.CurrentSettings.SessionManager.Systems.Clear();
                 Main.CurrentSettings.DownloadManager.Downloads.Clear();
                 var files = System.IO.Directory.GetFiles(Main.LogFolder);
                 for (int i = 0; i < files.Length; i++)

@@ -558,7 +558,7 @@ namespace Yorot
         public void LoadDefaults(bool root)
         {
             DownloadManager = new DownloadManager(Profile.UserDownloads, Profile.Manager.Main);
-            HistoryManager = new HistoryManager(Profile.UserHistory, Profile.Manager.Main);
+            SessionManager = new SessionManager(Profile.UserHistory, Profile.Manager.Main);
             FavManager = new FavMan(Profile.UserFavorites, Profile.Manager.Main);
             SiteMan = new SiteMan(Profile.UserSites, Profile.Manager.Main);
             HomePage = "yorot://newtab";
@@ -630,9 +630,13 @@ namespace Yorot
         {
             if (Profile.Name != "root")
             {
-                HistoryManager.Save();
+                SessionManager.Shutdown();
                 FavManager.Save();
                 DownloadManager.Save();
+                if (!System.IO.File.Exists(Profile.Manager.Main.Profiles.Current.UserSettings))
+                {
+                    System.IO.File.Create(Profile.Manager.Main.Profiles.Current.UserSettings).Close();
+                }
                 HTAlt.Tools.WriteFile(Profile.Manager.Main.Profiles.Current.UserSettings, ToXml(), Encoding.Unicode);
             }
         }
@@ -653,9 +657,9 @@ namespace Yorot
         public SiteMan SiteMan { get; set; }
 
         /// <summary>
-        /// User history manager
+        /// User history & session manager.
         /// </summary>
-        public HistoryManager HistoryManager { get; set; }
+        public SessionManager SessionManager { get; set; }
 
         /// <summary>
         /// User favorites manager
@@ -691,7 +695,7 @@ namespace Yorot
         /// <summary>
         /// Determines the date and time format.
         /// </summary>
-        public YorotDateAndTime DateFormat { get; set; }
+        public YorotDateAndTime DateFormat { get; set; } = YorotDateAndTime.DMY;
 
         /// <summary>
         /// Determines if old sessions should resotre on startup.
