@@ -17,7 +17,7 @@ namespace Yorot
         /// <summary>
         /// Determines the autosave interval in milliseconds.
         /// </summary>
-        public int AutosaveTimer { get; set; } = 5000;
+        public int AutosaveTimer { get; set; } = 300000;
 
         public override void ExtractXml(XmlNode rootNode)
         {
@@ -90,7 +90,9 @@ namespace Yorot
                 SessionSystem site = Systems[i];
                 x += site.XmlOut();
             }
-            return (x + "</Sessions>" + Environment.NewLine + "</root>").BeautifyXML();
+            x += "</Sessions>" + Environment.NewLine + "</root>";
+
+            return x.BeautifyXML();
         }
 
         public SessionSystem GenerateNew(string xml = null)

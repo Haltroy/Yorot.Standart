@@ -49,8 +49,9 @@ namespace Yorot
 
             DevMode = devMode;
             if (!System.IO.Directory.Exists(AppPath + "var" + System.IO.Path.DirectorySeparatorChar)) { System.IO.Directory.CreateDirectory(AppPath + "var" + System.IO.Path.DirectorySeparatorChar); }
+            EngineFolder = AppPath + "engine";
+            CurrentLocaleFile = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "locale.conf";
             LangConfig = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "lang.ycf";
-            EngineFolder = AppPath + "cef";
             LangFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "lang" + System.IO.Path.DirectorySeparatorChar;
             ExtFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "ext" + System.IO.Path.DirectorySeparatorChar;
             ThemesFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "themes" + System.IO.Path.DirectorySeparatorChar;
@@ -76,7 +77,8 @@ namespace Yorot
                     if (MOVED.HasWriteAccess())
                     {
                         AppPath = MOVED;
-                        EngineFolder = AppPath + "cef";
+                        EngineFolder = AppPath + "engine";
+                        CurrentLocaleFile = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "locale.conf";
                         LangConfig = AppPath + "var" + System.IO.Path.DirectorySeparatorChar + "lang.ycf";
                         LangFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "lang" + System.IO.Path.DirectorySeparatorChar;
                         ExtFolder = AppPath + "addons" + System.IO.Path.DirectorySeparatorChar + "ext" + System.IO.Path.DirectorySeparatorChar;
@@ -106,7 +108,8 @@ namespace Yorot
                 }
             }
 
-            if (!System.IO.Directory.Exists(EngineFolder)) { System.IO.Directory.CreateDirectory(EngineFolder); }
+            if (!System.IO.Directory.Exists(EngineFolder)) { throw new System.IO.DirectoryNotFoundException($"The engine folder does not exists, please add an engine (ex. CEF) to the folder \"{EngineFolder}\"."); }
+
             if (!System.IO.Directory.Exists(LangFolder)) { System.IO.Directory.CreateDirectory(LangFolder); }
             if (!System.IO.Directory.Exists(ExtFolder)) { System.IO.Directory.CreateDirectory(ExtFolder); }
             if (!System.IO.Directory.Exists(ThemesFolder)) { System.IO.Directory.CreateDirectory(ThemesFolder); }
@@ -114,19 +117,67 @@ namespace Yorot
             if (!System.IO.Directory.Exists(ProfilesFolder)) { System.IO.Directory.CreateDirectory(ProfilesFolder); }
             if (!System.IO.Directory.Exists(TempFolder)) { System.IO.Directory.CreateDirectory(TempFolder); }
             if (!System.IO.Directory.Exists(WHFolder)) { System.IO.Directory.CreateDirectory(WHFolder); }
+
+            // The only thing to construct right now.
+            Profiles = new ProfileManager(this);
+        }
+
+        public void Init()
+        {
             BeforeInit();
             Yopad = new Yopad(this);
             AppMan = new AppManager(this);
             ThemeMan = new ThemeManager(this);
             LangMan = new YorotLangManager(this);
             Extensions = new ExtensionManager(this);
-            Profiles = new ProfileManager(this);
+
             Wolfhook = new Wolfhook(WHFolder);
             if (Profiles.Profiles.Count < 2 && Profiles.Profiles.FindAll(it => it.Name == "root").Count > 0)
             {
                 OOBE = true;
             }
+            Profiles.Init();
             AfterInit();
+        }
+
+        /// <summary>
+        /// The Locale.
+        /// </summary>
+        public YorotLocale Locale
+        {
+            get
+            {
+                if (!System.IO.File.Exists(CurrentLocaleFile))
+                {
+                    System.IO.File.Create(CurrentLocaleFile).Close();
+                }
+                string locale = HTAlt.Tools.ReadFile(CurrentLocaleFile, System.Text.Encoding.UTF8);
+                if (!string.IsNullOrWhiteSpace(locale))
+                {
+                    YorotLocale loc;
+                    bool parsed = Enum.TryParse<YorotLocale>(locale, true, out loc);
+                    if (parsed)
+                    {
+                        return loc;
+                    }
+                    else
+                    {
+                        return YorotLocale.en;
+                    }
+                }
+                else
+                {
+                    return YorotLocale.en;
+                }
+            }
+            set
+            {
+                if (!System.IO.File.Exists(CurrentLocaleFile))
+                {
+                    System.IO.File.Create(CurrentLocaleFile).Close();
+                }
+                HTAlt.Tools.WriteFile(CurrentLocaleFile, value.ToString(), System.Text.Encoding.UTF8);
+            }
         }
 
         /// <summary>
@@ -373,16 +424,6 @@ namespace Yorot
         public string WHFolder { get; set; }
 
         /// <summary>
-        /// The folder that contains the engine used by Yorot. Mostly hosts libCEF and other Chromium Embedded Framework related files.
-        /// </summary>
-        public string EngineFolder { get; set; }
-
-        /// <summary>
-        /// The folder that hosts the locale files used by the engine.
-        /// </summary>
-        public string EngineLocaleFolder => System.IO.Path.Combine(EngineFolder, "locales");
-
-        /// <summary>
         /// Language Manager
         /// </summary>
         public YorotLangManager LangMan { get; set; }
@@ -441,6 +482,21 @@ namespace Yorot
         /// Extensions folder
         /// </summary>
         public string ExtFolder { get; set; }
+
+        /// <summary>
+        /// The folder that contains the engine used by Yorot. Mostly hosts libCEF and other Chromium Embedded Framework related files.
+        /// </summary>
+        public string EngineFolder { get; set; }
+
+        /// <summary>
+        /// The folder that hosts the locale files used by the engine.
+        /// </summary>
+        public string EngineLocaleFolder => System.IO.Path.Combine(EngineFolder, "locales");
+
+        /// <summary>
+        /// The file that hosts the current locale.
+        /// </summary>
+        public string CurrentLocaleFile { get; set; }
 
         /// <summary>
         /// Themes location.

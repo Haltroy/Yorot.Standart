@@ -33,6 +33,21 @@ namespace Yorot
         /// </summary>
         public List<YorotProfile> Profiles { get; set; } = new List<YorotProfile>();
 
+        /// <summary>
+        /// Completely Initializes the profile manager.
+        /// </summary>
+        public void Init()
+        {
+            for (int i = 0; i < Profiles.Count; i++)
+            {
+                var profile = Profiles[i];
+                if (profile == Current)
+                {
+                    profile.Settings = new Settings(profile);
+                }
+            }
+        }
+
         public override string ToXml()
         {
             string x = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + Environment.NewLine +
@@ -191,10 +206,6 @@ namespace Yorot
             {
                 System.IO.Directory.CreateDirectory(Path);
                 Output.WriteLine("[Profile:\"" + name + "\"] Profile directory does not exists. Created directory.", LogLevel.Info);
-            }
-            if (isCurrent)
-            {
-                Settings = new Settings(this);
             }
         }
 

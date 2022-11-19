@@ -379,18 +379,6 @@ namespace Yorot
                                     NotifPlaySound = node.InnerXml.XmlToString() == "true";
                                     break;
 
-                                case "locale":
-                                    YorotLocale _locale;
-                                    if (Enum.TryParse(node.InnerXml.XmlToString(), out _locale))
-                                    {
-                                        Locale = _locale;
-                                    }
-                                    else
-                                    {
-                                        Output.WriteLine("[Settings] Threw away \"" + node.OuterXml + "\", unsupported locale.", LogLevel.Warning);
-                                    }
-                                    break;
-
                                 case "datetime":
                                     switch (node.InnerXml.XmlToString())
                                     {
@@ -524,7 +512,6 @@ namespace Yorot
             }
             x += "<DoNotTrack>" + (DoNotTrack ? "true" : "false") + "</DoNotTrack>" + Environment.NewLine;
             x += "<ShowFavorites>" + (FavManager.ShowFavorites ? "true" : "false") + "</ShowFavorites>" + Environment.NewLine;
-            x += "<Locale>" + Locale.ToString() + "</Locale>" + Environment.NewLine;
             x += "<ClearHistory>" + Profile.Manager.Main.Cleanup.CleanupHistory + "</ClearHistory>" + Environment.NewLine;
             x += "<CleanHDate>" + Profile.Manager.Main.Cleanup.HistoryLastClear.ToString("dd-MM-yyyy HH-mm-ss") + "</CleanHDate>" + Environment.NewLine;
             x += "<ClearAddon>" + Profile.Manager.Main.Cleanup.CleanupAddon + "</ClearAddon>" + Environment.NewLine;
@@ -711,11 +698,6 @@ namespace Yorot
         /// Determines to sending DoNotTrack information to websites.
         /// </summary>
         public bool DoNotTrack { get; set; } = true;
-
-        /// <summary>
-        /// Locale setting.
-        /// </summary>
-        public YorotLocale Locale { get; set; } = YorotLocale.en;
 
         /// <summary>
         /// Determinbes if the app drawer should start full screen or not.
