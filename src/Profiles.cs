@@ -61,7 +61,7 @@ namespace Yorot
             for (int i = 0; i < Profiles.Count; i++)
             {
                 YorotProfile user = Profiles[i];
-                if (user.Name != "root")
+                if (user.Name != "root" && user.Name != "incognito" && user != Current)
                 {
                     x += "<Profile Name=\"" + user.Name.ToXML() + "\" Text=\"" + user.Text + "\" />" + Environment.NewLine;
                 }

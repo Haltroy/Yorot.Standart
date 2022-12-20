@@ -102,7 +102,32 @@ namespace Yorot
             return system;
         }
 
+        public void Close(SessionSystem session)
+        {
+            if (Systems.Contains(session))
+            {
+                Systems.Remove(session);
+            }
+            if (!ClosedSystems.Contains(session))
+            {
+                ClosedSystems.Add(session);
+            }
+        }
+
+        public void Open(SessionSystem session)
+        {
+            if (ClosedSystems.Contains(session))
+            {
+                ClosedSystems.Remove(session);
+            }
+            if (!Systems.Contains(session))
+            {
+                Systems.Add(session);
+            }
+        }
+
         public List<SessionSystem> Systems { get; set; } = new List<SessionSystem>();
+        public List<SessionSystem> ClosedSystems { get; set; } = new List<SessionSystem>();
 
         /// <summary>
         /// Determines if the previous shutdow was safely done. If not, then you can ask user if they want to restore the last session.
@@ -226,7 +251,7 @@ namespace Yorot
                 SkipAdd = true;
                 SelectedIndex -= 1;
                 SelectedSession = Sessions[SelectedIndex];
-                LoadPage(SelectedSession.Url);
+                LoadPageReal(SelectedSession.Url);
             }
         }
 
@@ -237,7 +262,7 @@ namespace Yorot
                 SkipAdd = true;
                 SelectedIndex += 1;
                 SelectedSession = Sessions[SelectedIndex];
-                LoadPage(SelectedSession.Url);
+                LoadPageReal(SelectedSession.Url);
             }
         }
 
@@ -256,7 +281,7 @@ namespace Yorot
                 SkipAdd = true;
                 SelectedIndex = i;
                 SelectedSession = Sessions[i];
-                LoadPage(SelectedSession.Url);
+                LoadPageReal(SelectedSession.Url);
             }
             else
             {
@@ -264,9 +289,34 @@ namespace Yorot
             }
         }
 
+        private List<LoadPageDelegate> delegates = new List<LoadPageDelegate>();
+
+        private event LoadPageDelegate LoadPageReal;
+
         public delegate void LoadPageDelegate(string url);
 
-        public event LoadPageDelegate LoadPage;
+        public event LoadPageDelegate LoadPage
+        {
+            add
+            {
+                LoadPageReal += value;
+                delegates.Add(value);
+            }
+            remove
+            {
+                LoadPageReal -= value;
+                delegates.Remove(value);
+            }
+        }
+
+        public void RemoveAllEvents()
+        {
+            foreach (LoadPageDelegate eh in delegates)
+            {
+                LoadPageReal -= eh;
+            }
+            delegates.Clear();
+        }
 
         public void Add(string url, string title)
         {

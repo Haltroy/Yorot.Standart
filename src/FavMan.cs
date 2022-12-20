@@ -22,7 +22,9 @@ namespace Yorot
         /// <summary>
         /// A list contains loaded favorites.
         /// </summary>
-        public List<YorotFavFolder> Favorites { get; set; } = new List<YorotFavFolder>();
+        public YorotFavFolder RootFolder { get; set; }
+
+        public List<YorotFavFolder> Favorites => RootFolder.Favorites;
 
         /// <summary>
         /// Recursively gets all URLs of every favorite of <paramref name="list"/>.
@@ -107,6 +109,7 @@ namespace Yorot
 
         public override void ExtractXml(XmlNode rootNode)
         {
+            RootFolder = new YorotFavFolder(this, null);
             List<string> appliedSettings = new List<string>();
             for (int ı = 0; ı < rootNode.ChildNodes.Count; ı++)
             {
@@ -163,49 +166,52 @@ namespace Yorot
         public YorotFavFolder(FavMan favman, XmlNode node)
         {
             Manager = favman ?? throw new ArgumentNullException(nameof(favman));
-            // NAME
-            if (node.Attributes["Name"] != null)
+            if (node != null)
             {
-                Name = node.Attributes["Name"].Value.XmlToString();
-            }
-            else
-            {
-                Name = HTAlt.Tools.GenerateRandomText(17);
-            }
-            // TEXT
-            if (node.Attributes["Text"] != null)
-            {
-                Text = node.Attributes["Text"].Value.XmlToString();
-            }
-            else
-            {
-                Text = "";
-            }
-            // ICON
-            if (node.Attributes["Icon"] != null)
-            {
-                Name = node.Attributes["Icon"].Value.XmlToString();
-            }
-            else
-            {
-                IconLoc = "";
-            }
-            for (int i = 0; i < node.ChildNodes.Count; i++)
-            {
-                XmlNode subnode = node.ChildNodes[i];
-                switch (subnode.Name)
+                // NAME
+                if (node.Attributes["Name"] != null)
                 {
-                    case "Favorite":
-                        Favorites.Add(new YorotFavorite(Manager, subnode) { Manager = Manager });
-                        break;
+                    Name = node.Attributes["Name"].Value.XmlToString();
+                }
+                else
+                {
+                    Name = HTAlt.Tools.GenerateRandomText(17);
+                }
+                // TEXT
+                if (node.Attributes["Text"] != null)
+                {
+                    Text = node.Attributes["Text"].Value.XmlToString();
+                }
+                else
+                {
+                    Text = "";
+                }
+                // ICON
+                if (node.Attributes["Icon"] != null)
+                {
+                    IconLoc = node.Attributes["Icon"].Value.XmlToString();
+                }
+                else
+                {
+                    IconLoc = "";
+                }
+                for (int i = 0; i < node.ChildNodes.Count; i++)
+                {
+                    XmlNode subnode = node.ChildNodes[i];
+                    switch (subnode.Name)
+                    {
+                        case "Favorite":
+                            Favorites.Add(new YorotFavorite(Manager, subnode) { Manager = Manager });
+                            break;
 
-                    case "Folder":
-                        Favorites.Add(new YorotFavFolder(Manager, subnode) { Manager = Manager });
-                        break;
+                        case "Folder":
+                            Favorites.Add(new YorotFavFolder(Manager, subnode) { Manager = Manager });
+                            break;
 
-                    default:
-                        if (!subnode.NodeIsComment()) { Output.WriteLine("[FavMan] Threw away \"" + subnode.OuterXml + "\", unsupported.", LogLevel.Warning); }
-                        break;
+                        default:
+                            if (!subnode.NodeIsComment()) { Output.WriteLine("[FavMan] Threw away \"" + subnode.OuterXml + "\", unsupported.", LogLevel.Warning); }
+                            break;
+                    }
                 }
             }
         }
@@ -426,7 +432,7 @@ namespace Yorot
         }
 
         /// <summary>
-        /// Parent folder of this favorite.
+        /// Parent folder of this favorite. <see cref="null"/> if it's on top.
         /// </summary>
         public YorotFavFolder ParentFolder { get; set; }
 
