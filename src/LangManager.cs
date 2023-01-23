@@ -1,5 +1,6 @@
 ﻿using HTAlt;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml;
@@ -46,6 +47,8 @@ namespace Yorot
     /// </summary>
     public class YorotLangManager : YorotManager
     {
+        private List<YorotLanguage> languages = new List<YorotLanguage>();
+
         /// <summary>
         /// Creates a new Language manager.
         /// </summary>
@@ -54,7 +57,15 @@ namespace Yorot
         /// <summary>
         /// A list of loaded languages.
         /// </summary>
-        public List<YorotLanguage> Languages { get; set; } = new List<YorotLanguage>();
+        public List<YorotLanguage> Languages
+        {
+            get => languages;
+            set
+            {
+                Main.OnLangListChanged();
+                languages = value;
+            }
+        }
 
         /// <summary>
         /// Gets language from code name.
@@ -63,7 +74,7 @@ namespace Yorot
         /// <returns><see cref="YorotLanguage"/></returns>
         public YorotLanguage GetLangByCN(string codeName)
         {
-            List<YorotLanguage> l = Languages.FindAll(i => i.CodeName.ToLowerEnglish() == codeName.ToLowerEnglish());
+            List<YorotLanguage> l = Languages.FindAll(i => !string.IsNullOrWhiteSpace(i.CodeName) && !string.IsNullOrWhiteSpace(codeName) && i.CodeName.ToLowerEnglish() == codeName.ToLowerEnglish());
             if (l.Count > 0)
             {
                 return l[0];
@@ -177,6 +188,22 @@ namespace Yorot
     /// </summary>
     public class YorotLanguage
     {
+        #region Stuff
+
+        private string langFile;
+        private string hTUPDATE;
+        private string name;
+        private string author;
+        private int compatibleVer;
+        private int version;
+        private bool loadedRoot;
+        private string codeName;
+        private bool enabled;
+        private Dictionary<string, string> langVars = new Dictionary<string, string>();
+        private Dictionary<string, string> langItems = new Dictionary<string, string>();
+
+        #endregion Stuff
+
         /// <summary>
         /// Creates a new language.
         /// </summary>
@@ -194,36 +221,39 @@ namespace Yorot
                     LangFile = configFile;
                     LoadedRoot = false;
                     XmlDocument doc = new XmlDocument();
-                    doc.LoadXml(HTAlt.Tools.ReadFile(configFile, Encoding.Unicode));
-                    XmlNode rootNode = HTAlt.Tools.FindRoot(doc);
-                    RecursiveAdd(rootNode, "");
+                    string lang_xml = HTAlt.Tools.ReadFile(configFile, Encoding.Unicode);
+                    if (!string.IsNullOrWhiteSpace(lang_xml))
+                    {
+                        doc.LoadXml(lang_xml);
+                        XmlNode rootNode = HTAlt.Tools.FindRoot(doc);
+                        RecursiveAdd(rootNode, "");
+                    }
                 }
                 else
                 {
                     throw new ArgumentException("File \"" + configFile + "\" does not exists.");
                 }
             }
-            else
-            {
-                throw new ArgumentNullException("configFile");
-            }
         }
 
         /// <summary>
         /// Location of this language file in drive.
         /// </summary>
-        public string LangFile { get; set; }
+        public string LangFile
+        {
+            get => langFile; set { Manager.Main.OnLanguageChange(this); langFile = value; }
+        }
 
         /// <summary>
         /// Adds default variables to language.
         /// </summary>
         private void AddDefaultVars()
         {
-            LangVars.Add(new YorotLangVar("NEWLINE", Environment.NewLine));
-            LangVars.Add(new YorotLangVar("APPNAME", Manager.Main.Name));
-            LangVars.Add(new YorotLangVar("APPCODENAME", Manager.Main.CodeName));
-            LangVars.Add(new YorotLangVar("APPVER", Manager.Main.VersionText));
-            LangVars.Add(new YorotLangVar("APPVERNO", "" + Manager.Main.Version));
+            LangVars.Add("NEWLINE", Environment.NewLine);
+            LangVars.Add("APPNAME", Manager.Main.Name);
+            LangVars.Add("APPCODENAME", Manager.Main.CodeName);
+            LangVars.Add("APPVER", Manager.Main.VersionText);
+            LangVars.Add("APPVERNO", "" + Manager.Main.Version);
             // TODO: (LONG TERM) Add more
         }
 
@@ -238,13 +268,13 @@ namespace Yorot
         /// <param name="main"><see cref="YorotLangItem"/></param>
         /// <param name="langVar"><see cref="YorotLangVar"/></param>
         /// <returns><see cref="string"/></returns>
-        private static string RuleifyString(string main, YorotLangVar langVar)
+        private static string RuleifyString(string main, string langVar, string varvalue)
         {
             string ignored = "§IGNORED_" + HTAlt.Tools.GenerateRandomText(17) + "§";
             return main
-                .Replace("![" + langVar.Name.ToUpper() + "]", ignored)
-                .Replace("[" + langVar.Name.ToUpper() + "]", string.IsNullOrEmpty(langVar.Text) ? "" : langVar.Text)
-                .Replace(ignored, "[" + langVar.Name.ToUpper() + "]");
+                .Replace("![" + langVar.ToUpper() + "]", ignored)
+                .Replace("[" + langVar.ToUpper() + "]", string.IsNullOrEmpty(varvalue) ? "" : varvalue)
+                .Replace(ignored, "[" + langVar.ToUpper() + "]");
         }
 
         /// <summary>
@@ -255,37 +285,93 @@ namespace Yorot
         /// <summary>
         /// HTUPDATE of this language.
         /// </summary>
-        public string HTUPDATE { get; set; }
+        public string HTUPDATE
+        {
+            get => hTUPDATE;
+            set
+            {
+                Manager.Main.OnLanguageChange(this);
+                hTUPDATE = value;
+            }
+        }
 
         /// <summary>
         /// Loaded Language Variables.
         /// </summary>
-        public List<YorotLangVar> LangVars { get; set; } = new List<YorotLangVar>();
+        public Dictionary<string, string> LangVars
+        {
+            get => langVars;
+            set
+            {
+                Manager.Main.OnLanguageChange(this);
+                langVars = value;
+            }
+        }
 
         /// <summary>
         /// Loaded Language Items.
         /// </summary>
-        public List<YorotLangItem> LangItems { get; set; } = new List<YorotLangItem>();
+        public Dictionary<string, string> LangItems
+        {
+            get => langItems;
+            set
+            {
+                Manager.Main.OnLanguageChange(this);
+                langItems = value;
+            }
+        }
 
         /// <summary>
         /// Name of this language.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get => name;
+            set
+            {
+                Manager.Main.OnLanguageChange(this);
+                name = value;
+            }
+        }
 
         /// <summary>
         /// Author information about this langauge.
         /// </summary>
-        public string Author { get; set; }
+        public string Author
+        {
+            get => author;
+            set
+            {
+                Manager.Main.OnLanguageChange(this);
+                author = value;
+            }
+        }
 
         /// <summary>
         /// Yorot version that this language is made for.
         /// </summary>
-        public int CompatibleVer { get; set; }
+        public int CompatibleVer
+        {
+            get => compatibleVer;
+            set
+            {
+                Manager.Main.OnLanguageChange(this);
+                compatibleVer = value;
+            }
+        }
 
         /// <summary>
         /// Version of this language file.
         /// </summary>
-        public int Version { get; set; }
+        public int Version
+        {
+            get => version;
+            set
+            {
+                Manager.Main.OnLanguageChange(this);
+                version = value;
+            }
+        }
 
         /// <summary>
         /// Finds Language Item from ID.
@@ -294,38 +380,89 @@ namespace Yorot
         /// <returns><see cref="string"/></returns>
         public string GetItemText(string ID)
         {
-            YorotLangItem item = LangItems.Find(i => i.ID.Trim() == ID.Trim());
-            if (item == null)
+            ID = ID.Trim();
+            if (!LangItems.ContainsKey(ID))
             {
                 Output.WriteLine("[Language] Missing Item [ID=\"" + ID + "\" LangFile=\"" + LangFile + "\"]", LogLevel.Warning);
                 return "[MI] " + ID;
             }
             else
             {
-                string itemText = item.Text;
-                for (int i = 0; i < LangVars.Count; i++)
+                string item = LangItems[ID];
+                string itemText = item;
+                int i = 0;
+                int count = LangVars.Keys.Count;
+                var enumerator = LangVars.Keys.GetEnumerator();
+                while (i != count)
                 {
-                    YorotLangVar globalVar = LangVars[i];
-                    itemText = RuleifyString(itemText, globalVar);
+                    enumerator.MoveNext();
+                    i++;
+                    itemText = RuleifyString(itemText, enumerator.Current, LangVars[enumerator.Current]);
                 }
+                //foreach (string key in LangVars.Keys)
+                //{
+                //    itemText = RuleifyString(itemText, key, LangVars[key]);
+                //}
                 return itemText;
             }
         }
 
         /// <summary>
+        /// Prepares a string.
+        /// </summary>
+        /// <param name="newstr">String to prepare.</param>
+        /// <returns><see cref="string"/></returns>
+        public string Prepare(string newstr)
+        {
+            int i = 0; int c = LangItems.Count;
+            var enumerator = LangItems.Keys.GetEnumerator();
+            while (i != c)
+            {
+                enumerator.MoveNext();
+                i++;
+                newstr = newstr.Replace("[" + enumerator.Current + "]", LangItems[enumerator.Current]);
+            }
+            return newstr;
+        }
+
+        /// <summary>
         /// Determines if group #YOROT-ROOT is loaded.
         /// </summary>
-        public bool LoadedRoot { get; set; }
+        public bool LoadedRoot
+        {
+            get => loadedRoot;
+            set
+            {
+                Manager.Main.OnLanguageChange(this);
+                loadedRoot = value;
+            }
+        }
 
         /// <summary>
         /// The code name of this language file.
         /// </summary>
-        public string CodeName { get; set; }
+        public string CodeName
+        {
+            get => codeName;
+            set
+            {
+                Manager.Main.OnLanguageChange(this);
+                codeName = value;
+            }
+        }
 
         /// <summary>
         /// Determines if this language is enabled.
         /// </summary>
-        public bool Enabled { get; set; }
+        public bool Enabled
+        {
+            get => enabled;
+            set
+            {
+                Manager.Main.OnLanguageChange(this);
+                enabled = value;
+            }
+        }
 
         /// <summary>
         /// Recursively adds items to system.
@@ -342,13 +479,13 @@ namespace Yorot
                         {
                             if (node.Attributes["ID"] != null && node.Attributes["Text"] != null)
                             {
-                                if (LangVars.FindAll(it => it.Name == node.Attributes["ID"].Value && it.Text == node.Attributes["Text"].Value).Count > 0)
+                                if (LangVars[node.Attributes["ID"].Value] != null)
                                 {
                                     Output.WriteLine("[LangManager] Threw away \"" + node.OuterXml + "\", Language Variable already exists.", LogLevel.Warning);
                                 }
                                 else
                                 {
-                                    LangVars.Add(new YorotLangVar((string.IsNullOrWhiteSpace(groupID) ? "" : groupID + ".") + node.Attributes["ID"].Value.XmlToString(), node.Attributes["Text"].Value.XmlToString()));
+                                    LangVars.Add((string.IsNullOrWhiteSpace(groupID) ? "" : groupID + ".") + node.Attributes["ID"].Value.XmlToString(), node.Attributes["Text"].Value.XmlToString());
                                 }
                             }
                             else
@@ -359,17 +496,17 @@ namespace Yorot
                         }
                     case "translation":
                         {
-                            string id = node.Attributes["ID"] != null ? node.Attributes["ID"].Value.XmlToString() : HTAlt.Tools.GenerateRandomText(12);
+                            string id = (string.IsNullOrWhiteSpace(groupID) ? "" : groupID + ".") + (node.Attributes["ID"] != null ? node.Attributes["ID"].Value.XmlToString() : HTAlt.Tools.GenerateRandomText(12));
                             string text = node.Attributes["Text"] != null ? node.Attributes["Text"].Value.XmlToString() : id;
                             if (!string.IsNullOrWhiteSpace(id) && !string.IsNullOrWhiteSpace(text))
                             {
-                                if (LangItems.FindAll(it => it.ID == id && it.Text == text).Count > 0)
+                                if (LangItems.ContainsKey(id))
                                 {
                                     Output.WriteLine("[LangManager] Threw away \"" + node.OuterXml + "\", Language Item already exists.", LogLevel.Warning);
                                 }
                                 else
                                 {
-                                    LangItems.Add(new YorotLangItem() { ID = (string.IsNullOrWhiteSpace(groupID) ? "" : groupID + ".") + id, Text = text });
+                                    LangItems.Add(id, text);
                                 }
                             }
                             else
@@ -451,63 +588,6 @@ namespace Yorot
                 }
             }
         }
-
-        /// <summary>
-        /// Prepares a string.
-        /// </summary>
-        /// <param name="newstr">String to prepare.</param>
-        /// <returns><see cref="string"/></returns>
-        public string Prepare(string newstr)
-        {
-            for (int i = 0; i < LangItems.Count; i++)
-            {
-                newstr = newstr.Replace("[" + LangItems[i].ID + "]", GetItemText(LangItems[i].ID));
-            }
-            return newstr;
-        }
-    }
-
-    /// <summary>
-    /// Item used in translation of Yorot.
-    /// </summary>
-    public class YorotLangItem
-    {
-        /// <summary>
-        /// Name/CodeName of item.
-        /// </summary>
-        public string ID { get; set; }
-
-        /// <summary>
-        /// Text to display.
-        /// </summary>
-        public string Text { get; set; }
-    }
-
-    /// <summary>
-    /// Variable used in <see cref="YorotLangItem"/>.
-    /// </summary>
-    public class YorotLangVar
-    {
-        /// <summary>
-        /// Creates a new <see cref="YorotLangVar"/>.
-        /// </summary>
-        /// <param name="name">Name of <see cref="YorotLangVar"/>.</param>
-        /// <param name="defaultVal">Default value of <see cref="YorotLangVar"/>.</param>
-        public YorotLangVar(string name, string defaultVal = "")
-        {
-            Text = defaultVal;
-            Name = name;
-        }
-
-        /// <summary>
-        /// nbame of <see cref="YorotLangVar"/>.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Text or value of <see cref="YorotLangVar"/>.
-        /// </summary>
-        public string Text { get; set; }
     }
 
     /// <summary>

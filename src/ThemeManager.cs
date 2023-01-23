@@ -12,14 +12,16 @@ namespace Yorot
     /// </summary>
     public class ThemeManager : YorotManager
     {
+        private List<YorotTheme> themes = new List<YorotTheme>();
+
         public ThemeManager(YorotMain main) : base(main.ThemeConfig, main)
         {
-            Themes.Add(DefaultThemes.YorotLight.CarbonCopy());
-            Themes.Add(DefaultThemes.YorotDark.CarbonCopy());
-            Themes.Add(DefaultThemes.YorotDeepBlue.CarbonCopy());
-            Themes.Add(DefaultThemes.YorotRazor.CarbonCopy());
-            Themes.Add(DefaultThemes.YorotShadow.CarbonCopy());
-            Themes.Add(DefaultThemes.YorotStone.CarbonCopy());
+            Themes.Add(DefaultThemes.YorotLight(this).CarbonCopy());
+            Themes.Add(DefaultThemes.YorotDark(this).CarbonCopy());
+            Themes.Add(DefaultThemes.YorotDeepBlue(this).CarbonCopy());
+            Themes.Add(DefaultThemes.YorotRazor(this).CarbonCopy());
+            Themes.Add(DefaultThemes.YorotShadow(this).CarbonCopy());
+            Themes.Add(DefaultThemes.YorotStone(this).CarbonCopy());
             ClaimMan();
         }
 
@@ -37,9 +39,16 @@ namespace Yorot
         /// <summary>
         /// A list of loaded themes.
         /// </summary>
-        public List<YorotTheme> Themes { get; set; } = new List<YorotTheme>();
+        public List<YorotTheme> Themes
+        {
+            get => themes;
+            set
+            {
+                Main.OnThemeListChanged();
+                themes = value;
+            }
+        }
 
-        ///
         public override string ToXml()
         {
             string x = "<?xml version=\"1.0\" encoding=\"utf-16\"?>" + Environment.NewLine +
@@ -81,7 +90,7 @@ namespace Yorot
                             switch (subnode.Name)
                             {
                                 case "Theme":
-                                    Themes.Add(new YorotTheme(subnode.InnerXml.XmlToString().ShortenPath(Main)));
+                                    Themes.Add(new YorotTheme(this, subnode.InnerXml.XmlToString().ShortenPath(Main)));
                                     break;
 
                                 default:
@@ -158,7 +167,7 @@ namespace Yorot
         /// <summary>
         /// Light theme
         /// </summary>
-        public static YorotTheme YorotLight => new YorotTheme()
+        public static YorotTheme YorotLight(ThemeManager man) => new YorotTheme(man)
         {
             Name = "Yorot Light",
             Author = "Haltroy",
@@ -178,7 +187,7 @@ namespace Yorot
         /// <summary>
         /// Light gray theme, looks like it's made in early 90's
         /// </summary>
-        public static YorotTheme YorotStone => new YorotTheme()
+        public static YorotTheme YorotStone(ThemeManager man) => new YorotTheme(man)
         {
             Name = "Yorot Stone",
             Author = "Haltroy",
@@ -198,7 +207,7 @@ namespace Yorot
         /// <summary>
         /// Razor theme
         /// </summary>
-        public static YorotTheme YorotRazor => new YorotTheme()
+        public static YorotTheme YorotRazor(ThemeManager man) => new YorotTheme(man)
         {
             Name = "Yorot Razor",
             Author = "Haltroy",
@@ -218,7 +227,7 @@ namespace Yorot
         /// <summary>
         /// The "Dark mode"
         /// </summary>
-        public static YorotTheme YorotDark => new YorotTheme()
+        public static YorotTheme YorotDark(ThemeManager man) => new YorotTheme(man)
         {
             Name = "Yorot Dark",
             Author = "Haltroy",
@@ -238,7 +247,7 @@ namespace Yorot
         /// <summary>
         /// A little brighter than <see cref="YorotDark"/>
         /// </summary>
-        public static YorotTheme YorotShadow => new YorotTheme()
+        public static YorotTheme YorotShadow(ThemeManager man) => new YorotTheme(man)
         {
             Name = "Yorot Shadow",
             Author = "Haltroy",
@@ -258,7 +267,7 @@ namespace Yorot
         /// <summary>
         /// Theme used in Haltroy's website
         /// </summary>
-        public static YorotTheme YorotDeepBlue => new YorotTheme()
+        public static YorotTheme YorotDeepBlue(ThemeManager man) => new YorotTheme(man)
         {
             Name = "Yorot Deep Blue",
             Author = "Haltroy",
@@ -281,17 +290,39 @@ namespace Yorot
     /// </summary>
     public partial class YorotTheme : IEquatable<YorotTheme>
     {
+        #region Stuff
+
+        private string name;
+        private string author;
+        private string codeName;
+        private string hTUPDATE;
+        private int version;
+        private string thumbLoc;
+        private string config;
+        private bool isDefaultTheme1 = false;
+        private YorotColor backColor;
+        private YorotColor foreColor;
+        private YorotColor overlayColor;
+        private YorotColor overlayForeColor;
+        private YorotColor artColor;
+        private YorotColor artForeColor;
+        private bool enabled = false;
+
+        #endregion Stuff
+
         /// <summary>
         /// Creates a new Yorot theme. This constructor does not initializes the theme.
         /// </summary>
-        public YorotTheme()
-        { }
+        public YorotTheme(ThemeManager man)
+        {
+            Manager = man ?? throw new ArgumentNullException(nameof(man));
+        }
 
         /// <summary>
         /// Creates a new Yorot theme and initializes it.
         /// </summary>
         /// <param name="fileLoc">Location of the theme file on disk.</param>
-        public YorotTheme(string fileLoc)
+        public YorotTheme(ThemeManager man, string fileLoc) : this(man)
         {
             if (!string.IsNullOrWhiteSpace(fileLoc))
             {
@@ -385,7 +416,7 @@ namespace Yorot
         /// <returns><see cref="YorotTheme"/></returns>
         public YorotTheme CarbonCopy()
         {
-            return new YorotTheme()
+            return new YorotTheme(Manager)
             {
                 Name = Name,
                 Author = Author,
@@ -458,47 +489,119 @@ namespace Yorot
         /// <summary>
         /// Name of the theme.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get => name;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                name = value;
+            }
+        }
 
         /// <summary>
         /// Author of the theme.
         /// </summary>
-        public string Author { get; set; }
+        public string Author
+        {
+            get => author;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                author = value;
+            }
+        }
 
         /// <summary>
         /// CodeName of the theme.
         /// </summary>
-        public string CodeName { get; set; }
+        public string CodeName
+        {
+            get => codeName;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                codeName = value;
+            }
+        }
 
         /// <summary>
         /// HTUPDATE of the theme.
         /// </summary>
-        public string HTUPDATE { get; set; }
+        public string HTUPDATE
+        {
+            get => hTUPDATE;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                hTUPDATE = value;
+            }
+        }
 
         /// <summary>
         /// Version of the theme.
         /// </summary>
-        public int Version { get; set; }
+        public int Version
+        {
+            get => version;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                version = value;
+            }
+        }
 
         /// <summary>
         /// Thumbnail location of the theme.
         /// </summary>
-        public string ThumbLoc { get; set; }
+        public string ThumbLoc
+        {
+            get => thumbLoc;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                thumbLoc = value;
+            }
+        }
 
         /// <summary>
         /// Location of the theme file on disk.
         /// </summary>
-        public string Config { get; set; }
+        public string Config
+        {
+            get => config;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                config = value;
+            }
+        }
 
         /// <summary>
         /// Determines if this theme comes pre-installed with Yorot.
         /// </summary>
-        public bool isDefaultTheme { get; set; } = false;
+        public bool isDefaultTheme
+        {
+            get => isDefaultTheme1;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                isDefaultTheme1 = value;
+            }
+        }
 
         /// <summary>
         /// Background Color
         /// </summary>
-        public YorotColor BackColor { get; set; }
+        public YorotColor BackColor
+        {
+            get => backColor;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                backColor = value;
+            }
+        }
 
         /// <summary>
         /// A little brighter/darker <see cref="BackColor"/>.
@@ -518,12 +621,28 @@ namespace Yorot
         /// <summary>
         /// The foreground color, determines the text and button images colors.
         /// </summary>
-        public YorotColor ForeColor { get; set; }
+        public YorotColor ForeColor
+        {
+            get => foreColor;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                foreColor = value;
+            }
+        }
 
         /// <summary>
         /// The overlay color, determines the edges etc.
         /// </summary>
-        public YorotColor OverlayColor { get; set; }
+        public YorotColor OverlayColor
+        {
+            get => overlayColor;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                overlayColor = value;
+            }
+        }
 
         /// <summary>
         /// A little brighter/darker <see cref="OverlayColor"/>.
@@ -543,7 +662,15 @@ namespace Yorot
         /// <summary>
         /// Fore color for <see cref="OverlayColor"/>.
         /// </summary>
-        public YorotColor OverlayForeColor { get; set; }
+        public YorotColor OverlayForeColor
+        {
+            get => overlayForeColor;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                overlayForeColor = value;
+            }
+        }
 
         /// <summary>
         /// A little brighter/darker <see cref="OverlayForeColor"/>.
@@ -564,7 +691,15 @@ namespace Yorot
         /// <summary>
         /// Artiliary color, similar to <see cref="OverlayColor"/>
         /// </summary>
-        public YorotColor ArtColor { get; set; }
+        public YorotColor ArtColor
+        {
+            get => artColor;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                artColor = value;
+            }
+        }
 
         /// <summary>
         /// A little brighter/darker <see cref="ArtColor"/>.
@@ -584,7 +719,15 @@ namespace Yorot
         /// <summary>
         /// Fore Color for <see cref="ArtColor"/>
         /// </summary>
-        public YorotColor ArtForeColor { get; set; }
+        public YorotColor ArtForeColor
+        {
+            get => artForeColor;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                artForeColor = value;
+            }
+        }
 
         /// <summary>
         /// A little brighter/darker <see cref="ArtForeColor"/>.
@@ -604,7 +747,15 @@ namespace Yorot
         /// <summary>
         /// Determines if this theme is enabled or disabled by user or the system.
         /// </summary>
-        public bool Enabled { get; set; } = false;
+        public bool Enabled
+        {
+            get => enabled;
+            set
+            {
+                Manager.Main.OnThemeChange(this);
+                enabled = value;
+            }
+        }
 
         public static bool operator ==(YorotTheme left, YorotTheme right)
         {

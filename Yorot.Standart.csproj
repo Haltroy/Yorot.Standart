@@ -12,6 +12,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="src\YorotVirtualDrive.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="src\YorotVirtualDrive.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Foster" Version="2.0.0.1" />
     <PackageReference Include="Fostrian" Version="1.1.0" />
     <PackageReference Include="HTAlt.Standart" Version="0.1.7.7" />

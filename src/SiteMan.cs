@@ -168,7 +168,7 @@ namespace Yorot
                 YorotSite site = new YorotSite();
                 site.Manager = this;
                 site.Url = baseurl;
-                site.Permissions = new YorotSitePermissions(site);
+                site.Permissions = new YorotSite.YorotSitePermissions(site);
                 Sites.Add(site);
                 return site;
             }

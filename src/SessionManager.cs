@@ -182,12 +182,12 @@ namespace Yorot
                         {
                             if (node.Attributes["Url"] != null && node.Attributes["Title"] != null)
                             {
-                                Sessions.Add(new Session(node.Attributes["Url"].Value, node.Attributes["Tİtle"].Value));
+                                Add(new Session(node.Attributes["Url"].Value, node.Attributes["Title"].Value));
                             }
                         }
                     }
                     SelectedIndex = si;
-                    SelectedSession = Sessions[si];
+                    SelectedSession = this[si];
                 }
             }
         }
@@ -207,12 +207,12 @@ namespace Yorot
                     {
                         if (node.Attributes["Url"] != null && node.Attributes["Title"] != null)
                         {
-                            Sessions.Add(new Session(node.Attributes["Url"].Value, node.Attributes["Tİtle"].Value));
+                            Add(new Session(node.Attributes["Url"].Value, node.Attributes["Tİtle"].Value));
                         }
                     }
                 }
                 SelectedIndex = si;
-                SelectedSession = Sessions[si];
+                SelectedSession = this[si];
             }
         }
 
@@ -223,23 +223,26 @@ namespace Yorot
         public DateTime? Date { get; set; }
         public SessionManager Manager { get; set; }
         public bool IsDead { get; set; } = false;
+        public int Count => _Sessions.Count;
+
+        public Session this[int i]
+        {
+            get
+            {
+                return _Sessions[i];
+            }
+        }
 
         private List<Session> _Sessions = new List<Session>();
 
         public string XmlOut()
         {
             string x = $"<Session Index=\"{SelectedIndex}\" IsDead=\"{(IsDead ? "true" : "false")}\" Date=\"{YorotDateAndTime.DMY.GetShortName(Date ?? DateTime.Today)}\" >{Environment.NewLine}";
-            for (int i = 0; i < Sessions.Count; i++)
+            for (int i = 0; i < Count; i++)
             {
-                x += $"<SessionSite Url=\"{Sessions[i].Url}\" Title=\"{Sessions[i].Title}\" />{Environment.NewLine}";
+                x += $"<SessionSite Url=\"{this[i].Url}\" Title=\"{this[i].Title}\" />{Environment.NewLine}";
             }
             return x + "</Session>";
-        }
-
-        public List<Session> Sessions
-        {
-            get => _Sessions;
-            set => _Sessions = value;
         }
 
         public bool SkipAdd = false;
@@ -250,7 +253,7 @@ namespace Yorot
             {
                 SkipAdd = true;
                 SelectedIndex -= 1;
-                SelectedSession = Sessions[SelectedIndex];
+                SelectedSession = this[SelectedIndex];
                 LoadPageReal(SelectedSession.Url);
             }
         }
@@ -261,14 +264,9 @@ namespace Yorot
             {
                 SkipAdd = true;
                 SelectedIndex += 1;
-                SelectedSession = Sessions[SelectedIndex];
+                SelectedSession = this[SelectedIndex];
                 LoadPageReal(SelectedSession.Url);
             }
-        }
-
-        public Session SessionInIndex(int Index)
-        {
-            return Sessions[Index];
         }
 
         public Session SelectedSession { get; set; }
@@ -276,16 +274,16 @@ namespace Yorot
 
         public void MoveTo(int i)
         {
-            if (i >= 0 && i < Sessions.Count)
+            if (i >= 0 && i < this.Count)
             {
                 SkipAdd = true;
                 SelectedIndex = i;
-                SelectedSession = Sessions[i];
+                SelectedSession = this[i];
                 LoadPageReal(SelectedSession.Url);
             }
             else
             {
-                throw new ArgumentOutOfRangeException("\"i\" was bigger than Sessions.Count or smaller than 0. [i=\"" + i + "\" Count=\"" + Sessions.Count + "\"]");
+                throw new ArgumentOutOfRangeException("\"i\" was bigger than Sessions.Count or smaller than 0. [i=\"" + i + "\" Count=\"" + this.Count + "\"]");
             }
         }
 
@@ -318,6 +316,14 @@ namespace Yorot
             delegates.Clear();
         }
 
+        public void Remove(Session session) => _Sessions.Remove(session);
+
+        public void RemoveAt(int index) => _Sessions.RemoveAt(index);
+
+        public int IndexOf(Session session) => _Sessions.IndexOf(session);
+
+        public bool Contains(Session session) => _Sessions.Contains(session);
+
         public void Add(string url, string title)
         {
             Add(new Session(url, title));
@@ -334,59 +340,59 @@ namespace Yorot
                 return;
             }
             if (SkipAdd) { SkipAdd = false; return; }
-            if (CanGoForward && SelectedIndex + 1 < Sessions.Count)
+            if (CanGoForward && SelectedIndex + 1 < this.Count)
             {
-                if (!Session.Equals(Sessions[SelectedIndex]))
+                if (!Session.Equals(this[SelectedIndex]))
                 {
-                    Console.WriteLine("Session Not Equal: 1:" + Session.Url + " 2:" + Sessions[SelectedIndex].Url);
+                    Console.WriteLine("Session Not Equal: 1:" + Session.Url + " 2:" + this[SelectedIndex].Url);
                     Session[] RemoveThese = After();
                     for (int i = 0; i < RemoveThese.Length; i++)
                     {
-                        Sessions.Remove(RemoveThese[i]);
+                        this.Remove(RemoveThese[i]);
                     }
-                    if (Sessions.Count > 0)
+                    if (this.Count > 0)
                     {
-                        if (Sessions[Sessions.Count - 1].Url != Session.Url)
+                        if (this[this.Count - 1].Url != Session.Url)
                         {
-                            Sessions.Add(Session);
+                            _Sessions.Add(Session);
                         }
                     }
                     else
                     {
-                        Sessions.Add(Session);
+                        _Sessions.Add(Session);
                     }
                 }
             }
             else
             {
-                if (Sessions.Count > 0)
+                if (this.Count > 0)
                 {
-                    if (Sessions[Sessions.Count - 1].Url != Session.Url)
+                    if (this[this.Count - 1].Url != Session.Url)
                     {
-                        Sessions.Add(Session);
+                        _Sessions.Add(Session);
                     }
                 }
                 else
                 {
-                    Sessions.Add(Session);
+                    _Sessions.Add(Session);
                 }
             }
-            if (Sessions.Count > 0)
+            if (this.Count > 0)
             {
-                if (Sessions[Sessions.Count - 1].Url != Session.Url)
+                if (this[this.Count - 1].Url != Session.Url)
                 {
                     SelectedSession = Session;
-                    SelectedIndex = Sessions.IndexOf(Session);
+                    SelectedIndex = this.IndexOf(Session);
                 }
                 else
                 {
-                    SelectedSession = Sessions[Sessions.Count - 1];
-                    SelectedIndex = Sessions.Count - 1;
+                    SelectedSession = this[this.Count - 1];
+                    SelectedIndex = this.Count - 1;
                 }
             }
             else
             {
-                Sessions.Add(Session);
+                _Sessions.Add(Session);
             }
         }
 
@@ -404,11 +410,11 @@ namespace Yorot
             {
                 return false;
             }
-            if (!Sessions.Contains(Session))
+            if (!Contains(Session))
             {
                 throw new ArgumentOutOfRangeException("Cannot find Session[Url=\"" + (Session.Url == null ? "null" : Session.Url) + "\" Title=\"" + (Session.Title == null ? "null" : Session.Title) + "\"].");
             }
-            int current = Sessions.IndexOf(Session);
+            int current = this.IndexOf(Session);
             return current > 0;
         }
 
@@ -426,13 +432,13 @@ namespace Yorot
             {
                 return false;
             }
-            if (!Sessions.Contains(Session))
+            if (!this.Contains(Session))
             {
                 throw new ArgumentOutOfRangeException("Cannot find Session[Url=\"" + (Session.Url == null ? "null" : Session.Url) + "\" Title=\"" + (Session.Title == null ? "null" : Session.Title) + "\"].");
             }
 
-            int current = Sessions.IndexOf(Session) + 1;
-            return current < Sessions.Count;
+            int current = this.IndexOf(Session) + 1;
+            return current < this.Count;
         }
 
         public Session[] Before()
@@ -446,15 +452,15 @@ namespace Yorot
             {
                 return new Session[] { };
             }
-            if (!Sessions.Contains(Session))
+            if (!this.Contains(Session))
             {
                 throw new ArgumentOutOfRangeException("Cannot find Session[Url=\"" + (Session.Url == null ? "null" : Session.Url) + "\" Title=\"" + (Session.Title == null ? "null" : Session.Title) + "\"].");
             }
-            int current = Sessions.IndexOf(Session);
+            int current = this.IndexOf(Session);
             List<Session> fs = new List<Session>();
             for (int i = 0; i < current; i++)
             {
-                fs.Add(Sessions[i]);
+                fs.Add(this[i]);
             }
             return fs.ToArray();
         }
@@ -470,15 +476,15 @@ namespace Yorot
             {
                 return new Session[] { };
             }
-            if (!Sessions.Contains(Session))
+            if (!this.Contains(Session))
             {
                 throw new ArgumentOutOfRangeException("Cannot find Session[Url=\"" + (Session.Url == null ? "null" : Session.Url) + "\" Title=\"" + (Session.Title == null ? "null" : Session.Title) + "\"].");
             }
-            int current = Sessions.IndexOf(Session) + 1;
+            int current = this.IndexOf(Session) + 1;
             List<Session> fs = new List<Session>();
-            for (int i = current; i < Sessions.Count; i++)
+            for (int i = current; i < this.Count; i++)
             {
-                fs.Add(Sessions[i]);
+                fs.Add(this[i]);
             }
             return fs.ToArray();
         }

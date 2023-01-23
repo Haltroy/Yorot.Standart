@@ -374,6 +374,77 @@ namespace Yorot
         public abstract void BeforeInit();
 
         /// <summary>
+        /// Event raised when user selects a different theme, refresh your UI here.
+        /// </summary>
+        /// <param name="theme">Theme selected.</param>
+        public abstract void OnThemeChange(YorotTheme theme);
+
+        /// <summary>
+        /// Event raised when someone changes a specific favorite's information (Name, URL, Icon etc.), refresh your favorites here.
+        /// </summary>
+        /// <param name="fav">Favorite that is changed.</param>
+        public abstract void OnFavoriteChange(YorotFavFolder fav);
+
+        /// <summary>
+        /// Event raised when user changes the selected language, refresh your UI here.
+        /// </summary>
+        /// <param name="lang">Language selected.</param>
+        public abstract void OnLanguageChange(YorotLanguage lang);
+
+        /// <summary>
+        /// Event raised when something changes the <paramref name="site"/>'s settings, refresh your web browser content if you are on this site.
+        /// </summary>
+        /// <param name="site">Site that is updated.</param>
+        public abstract void OnSiteChange(YorotSite site);
+
+        /// <summary>
+        /// Event raised when something changes a specific download.
+        /// </summary>
+        /// <param name="site">Download that is changed.</param>
+        public abstract void OnDownloadChange(YorotSite site);
+
+        /// <summary>
+        /// Event raised when something changes a specific profile.
+        /// </summary>
+        /// <param name="profile">Profile that is updated.</param>
+        public abstract void OnProfileChange(YorotProfile profile);
+
+        /// <summary>
+        /// Event raised when the profiel list is changed.
+        /// </summary>
+        public abstract void OnProfileListChanged();
+
+        /// <summary>
+        /// Event raised when the app list is changed (added or removed an app).
+        /// </summary>
+        public abstract void OnAppListChanged();
+
+        /// <summary>
+        /// Event raised when the languages list is updated.
+        /// </summary>
+        public abstract void OnLangListChanged();
+
+        /// <summary>
+        /// Event raised when the theme list is updated.
+        /// </summary>
+        public abstract void OnThemeListChanged();
+
+        /// <summary>
+        /// Event raised when the extension list is updated.
+        /// </summary>
+        public abstract void OnExtListChanged();
+
+        /// <summary>
+        /// Event raised when the download list is changed.
+        /// </summary>
+        public abstract void OnDownloadListChanged();
+
+        /// <summary>
+        /// Event raised when the history is changed. Access histroy from the <see cref="SessionManager"/>.
+        /// </summary>
+        public abstract void OnHistoryChanged();
+
+        /// <summary>
         /// Event raised after launching all managers.
         /// </summary>
         public abstract void AfterInit();

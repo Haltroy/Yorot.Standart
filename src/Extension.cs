@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
+using Yorot.AppForms;
 
 namespace Yorot
 {
@@ -10,13 +11,16 @@ namespace Yorot
     /// </summary>
     public class ExtensionManager : YorotManager
     {
+        private List<YorotExtension> extensions = new List<YorotExtension>();
+
         public ExtensionManager(YorotMain main) : base(main.ExtConfig, main)
         { }
 
         /// <summary>
         /// A list of loaded Yorot extensions.
         /// </summary>
-        public List<YorotExtension> Extensions { get; set; } = new List<YorotExtension>();
+        public List<YorotExtension> Extensions
+        { get => extensions; set { Main.OnExtListChanged(); extensions = value; } }
 
         public override void ExtractXml(XmlNode rootNode)
         {
@@ -119,6 +123,24 @@ namespace Yorot
     /// </summary>
     public class YorotExtension
     {
+        private bool isPinned1;
+        private string manifestFile;
+        private string codeName;
+        private string name;
+        private string hTU_Url;
+        private string author;
+        private int version;
+        private string ıcon;
+        private YorotRectangle size;
+        private string popup;
+        private YorotExtensionLaunchMode popupLaunchMode;
+        private string background;
+        private List<string> files = new List<string>();
+        private List<string> pageList = new List<string>();
+        private YorotExtensionSettings settings = new YorotExtensionSettings();
+        private List<YorotExtensionRCOption> rCOptions = new List<YorotExtensionRCOption>();
+        private bool enabled;
+
         /// <summary>
         /// Determines if this extension comes with this Yorot flavor.
         /// </summary>
@@ -178,7 +200,7 @@ namespace Yorot
                                 string innertext = node.InnerXml.XmlToString();
                                 string w = innertext.Substring(0, innertext.IndexOf(';'));
                                 string h = innertext.Substring(innertext.IndexOf(';'), innertext.Length - innertext.IndexOf(';'));
-                                Size = new System.Drawing.Size(int.Parse(w), int.Parse(h));
+                                Size = new YorotRectangle(0, 0, int.Parse(w), int.Parse(h));
                                 break;
 
                             case "popup":
@@ -418,57 +440,68 @@ namespace Yorot
         /// <summary>
         /// Determines if this extension is pinned to navigation bar.
         /// </summary>
-        public bool isPinned { get; set; }
+        public bool isPinned
+        { get => isPinned1; set { Manager.Main.OnExtListChanged(); isPinned1 = value; } }
 
         /// <summary>
         /// Location fo the manifest file for this extension on drive.
         /// </summary>
-        public string ManifestFile { get; set; }
+        public string ManifestFile
+        { get => manifestFile; set { Manager.Main.OnExtListChanged(); manifestFile = value; } }
 
         /// <summary>
         /// Code Name of the extension.
         /// </summary>
-        public string CodeName { get; set; }
+        public string CodeName
+        { get => codeName; set { Manager.Main.OnExtListChanged(); codeName = value; } }
 
         /// <summary>
         /// Display name of the extension.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        { get => name; set { Manager.Main.OnExtListChanged(); name = value; } }
 
         /// <summary>
         /// HTUPDATE URL of this extension.
         /// </summary>
-        public string HTU_Url { get; set; }
+        public string HTU_Url
+        { get => hTU_Url; set { Manager.Main.OnExtListChanged(); hTU_Url = value; } }
 
         /// <summary>
         /// Author of the extension.
         /// </summary>
-        public string Author { get; set; }
+        public string Author
+        { get => author; set { Manager.Main.OnExtListChanged(); author = value; } }
 
         /// <summary>
         /// Version of the extension.
         /// </summary>
-        public int Version { get; set; }
+        public int Version
+        { get => version; set { Manager.Main.OnExtListChanged(); version = value; } }
 
         /// <summary>
         /// Display Icon of the extension.
         /// </summary>
-        public string Icon { get; set; }
+        public string Icon
+        { get => ıcon; set { Manager.Main.OnExtListChanged(); ıcon = value; } }
 
         /// <summary>
-        /// Sİze of the Pop-up menu used in this extension.
+        /// Size of the Pop-up menu used in this extension.
         /// </summary>
-        public System.Drawing.Size Size { get; set; }
+        public YorotRectangle Size
+        { get => size; set { Manager.Main.OnExtListChanged(); size = value; } }
 
         /// <summary>
         /// Document to load as pop-up menu.
         /// </summary>
-        public string Popup { get; set; }
+        public string Popup
+        { get => popup; set { Manager.Main.OnExtListChanged(); popup = value; } }
 
         /// <summary>
         /// Determines the launch mode for <see cref="Popup"/>.
         /// </summary>
-        public YorotExtensionLaunchMode PopupLaunchMode { get; set; }
+        public YorotExtensionLaunchMode PopupLaunchMode
+        { get => popupLaunchMode; set { Manager.Main.OnExtListChanged(); popupLaunchMode = value; } }
 
         /// <summary>
         /// Script to run on Yorot startup.
@@ -478,32 +511,38 @@ namespace Yorot
         /// <summary>
         /// Script to run on background for allowed pages.
         /// </summary>
-        public string Background { get; set; }
+        public string Background
+        { get => background; set { Manager.Main.OnExtListChanged(); background = value; } }
 
         /// <summary>
         /// List of locations to files that used in this extension.
         /// </summary>
-        public List<string> Files { get; set; } = new List<string>();
+        public List<string> Files
+        { get => files; set { Manager.Main.OnExtListChanged(); files = value; } }
 
         /// <summary>
         /// Settings for this extension.
         /// </summary>
-        public YorotExtensionSettings Settings { get; set; } = new YorotExtensionSettings();
+        public YorotExtensionSettings Settings
+        { get => settings; set { Manager.Main.OnExtListChanged(); settings = value; } }
 
         /// <summary>
         /// List of pages that user allowed this extension to run.
         /// </summary>
-        public List<string> PageList { get; set; } = new List<string>();
+        public List<string> PageList
+        { get => pageList; set { Manager.Main.OnExtListChanged(); pageList = value; } }
 
         /// <summary>
         /// Right-click options for this extension.
         /// </summary>
-        public List<YorotExtensionRCOption> RCOptions { get; set; } = new List<YorotExtensionRCOption>();
+        public List<YorotExtensionRCOption> RCOptions
+        { get => rCOptions; set { Manager.Main.OnExtListChanged(); rCOptions = value; } }
 
         /// <summary>
         /// Determines if this extension is enabled or not.
         /// </summary>
-        public bool Enabled { get; set; }
+        public bool Enabled
+        { get => enabled; set { Manager.Main.OnExtListChanged(); enabled = value; } }
 
         /// <summary>
         /// Returns extension size in bytes.

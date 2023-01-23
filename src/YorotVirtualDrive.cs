@@ -6,6 +6,9 @@ using System.Text;
 
 namespace Yorot
 {
+    // TODO: Invent a new custom file system that is optimized for Yorot.
+    // File systems with the same root folder format such as ext4 or btrfs might be a good looking point.
+    // Also avoid NTFS limitations * : \ / | etc.
     public class YorotVirtualDrive : YorotVirtualDirectory
     {
         public new YorotVirtualDrive ParentDir = null;

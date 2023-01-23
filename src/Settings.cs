@@ -197,7 +197,7 @@ namespace Yorot
                                     }
                                     else
                                     {
-                                        CurrentTheme = Profile.Manager.Main.ThemeMan.GetThemeByCN(DefaultThemes.YorotLight.CodeName);
+                                        CurrentTheme = Profile.Manager.Main.ThemeMan.GetThemeByCN(DefaultThemes.YorotLight(Profile.Manager.Main.ThemeMan).CodeName);
                                     }
                                     break;
 
@@ -480,7 +480,7 @@ namespace Yorot
                     x += "<Lang Name=\"" + lang.CodeName + "\" />" + Environment.NewLine;
                 }
             }
-            x += "</Langs>" + Environment.NewLine + "<Themes Selected=\"" + CurrentTheme.CodeName + "\" >" + Environment.NewLine;
+            x += "</Langs>" + Environment.NewLine + "<Themes Selected=\"" + (CurrentTheme is null ? DefaultThemes.YorotLight(Profile.Manager.Main.ThemeMan).CodeName : CurrentTheme.CodeName) + "\" >" + Environment.NewLine;
             foreach (YorotTheme theme in Profile.Manager.Main.ThemeMan.Themes)
             {
                 if (theme.Enabled)

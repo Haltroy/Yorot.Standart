@@ -78,7 +78,7 @@ namespace Yorot
                                 {
                                     Name = subnode.Attributes["Name"].Value.XmlToString(),
                                     Url = subnode.Attributes["Url"].Value.XmlToString(),
-                                    Status = (YorotSiteStatus)int.Parse(subnode.Attributes["Status"].Value),
+                                    Status = (YorotSite.YorotSiteStatus)int.Parse(subnode.Attributes["Status"].Value),
                                     Manager = this,
                                 };
                                 if (subnode.Attributes["Error"] != null) { download.ErrorCode = subnode.Attributes["Error"].Value.XmlToString(); }

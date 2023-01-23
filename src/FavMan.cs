@@ -10,6 +10,8 @@ namespace Yorot
     /// </summary>
     public class FavMan : YorotManager
     {
+        private YorotFavFolder rootFolder;
+
         public FavMan(string configFile, YorotMain main) : base(configFile, main)
         {
         }
@@ -22,7 +24,8 @@ namespace Yorot
         /// <summary>
         /// A list contains loaded favorites.
         /// </summary>
-        public YorotFavFolder RootFolder { get; set; }
+        public YorotFavFolder RootFolder
+        { get => rootFolder; set { Main.OnFavoriteChange(value); rootFolder = value; } }
 
         public List<YorotFavFolder> Favorites => RootFolder.Favorites;
 
@@ -246,6 +249,10 @@ namespace Yorot
         /// </summary>
         private string iconLoc;
 
+        private string text;
+        private string name;
+        private List<YorotFavFolder> favorites = new List<YorotFavFolder>();
+
         /// <summary>
         /// Favorites manager associated with this folder/favorite.
         /// </summary>
@@ -254,22 +261,26 @@ namespace Yorot
         /// <summary>
         /// Subfolders and favorites inside this folder.
         /// </summary>
-        public List<YorotFavFolder> Favorites { get; set; } = new List<YorotFavFolder>();
+        public List<YorotFavFolder> Favorites
+        { get => favorites; set { Manager.Main.OnFavoriteChange(this); favorites = value; } }
 
         /// <summary>
         /// Name, or kinda like ID of the folder/favorite.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        { get => name; set { Manager.Main.OnFavoriteChange(this); name = value; } }
 
         /// <summary>
         /// Display text of this folder/favorite.
         /// </summary>
-        public string Text { get; set; }
+        public string Text
+        { get => text; set { Manager.Main.OnFavoriteChange(this); text = value; } }
 
         /// <summary>
         /// Easy-to-read version of icon.
         /// </summary>
-        public string IconLoc { get => iconLoc.ShortenPath(Manager.Main); set => iconLoc = value.GetPath(Manager.Main); }
+        public string IconLoc
+        { get => iconLoc.ShortenPath(Manager.Main); set { Manager.Main.OnFavoriteChange(this); iconLoc = value.GetPath(Manager.Main); } }
 
         /// <summary>
         /// Moves folder/favorite in <paramref name="oi"/> to <paramref name="ni"/>.
@@ -372,6 +383,8 @@ namespace Yorot
     /// </summary>
     public class YorotFavorite : YorotFavFolder
     {
+        private string url;
+
         /// <summary>
         /// Creates a new Yorot Favorite.
         /// </summary>
@@ -525,6 +538,7 @@ namespace Yorot
         /// <summary>
         /// Website of the favorite.
         /// </summary>
-        public string Url { get; set; }
+        public string Url
+        { get => url; set { Manager.Main.OnFavoriteChange(this); url = value; } }
     }
 }

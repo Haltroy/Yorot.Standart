@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
+using Yorot.AppForms;
 
 namespace Yorot
 {
@@ -10,6 +11,9 @@ namespace Yorot
     /// </summary>
     public class AppManager : YorotManager
     {
+        private List<YorotApp> apps = new List<YorotApp>();
+        private List<YorotAppInfo> appInfos = new List<YorotAppInfo>();
+
         /// <summary>
         /// Creates a new App manager.
         /// </summary>
@@ -53,12 +57,14 @@ namespace Yorot
         /// <summary>
         /// A <see cref="List{T}"/> of <see cref="YorotApp"/>(s).
         /// </summary>
-        public List<YorotApp> Apps { get; set; } = new List<YorotApp>();
+        public List<YorotApp> Apps
+        { get => apps; set { Main.OnAppListChanged(); apps = value; } }
 
         /// <summary>
         /// A <see cref="List{T}"/> of <see cref="YorotAppInfo"/>(s).
         /// </summary>
-        public List<YorotAppInfo> AppInfos { get; set; } = new List<YorotAppInfo>();
+        public List<YorotAppInfo> AppInfos
+        { get => appInfos; set { Main.OnAppListChanged(); appInfos = value; } }
 
         /// <summary>
         /// Gets <see cref="YorotApp"/> by it's <see cref="YorotApp.AppCodeName"/>.
@@ -70,7 +76,7 @@ namespace Yorot
             return Apps.Find(i => string.Equals(i.AppCodeName, appcn));
         }
 
-        // TODO: DON'T actullay add apps from here, load DLLs and determine if they are enbaled or not here.
+        // TODO: DON'T actually add apps from here, load DLLs and determine if they are enabled or not here.
         // TODO: Do the same to extensions and add ability to inject JS too.
         public override void ExtractXml(XmlNode rootNode)
         {
@@ -227,6 +233,12 @@ namespace Yorot
 
     public class YorotAppInfo
     {
+        private YorotAppOrigin appOrigin;
+        private string appOriginInfo;
+        private bool isPinned1 = false;
+        private bool isEnabled1 = false;
+        private string appCodeName;
+
         public YorotAppInfo(string appCodeName, AppManager manager)
         {
             Manager = manager ?? throw new ArgumentNullException(nameof(manager));
@@ -241,27 +253,69 @@ namespace Yorot
         /// <summary>
         /// Origin of aapp.
         /// </summary>
-        public YorotAppOrigin AppOrigin { get; set; }
+        public YorotAppOrigin AppOrigin
+        {
+            get => appOrigin;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                appOrigin = value;
+            }
+        }
 
         /// <summary>
         /// Information about origin of this app.
         /// </summary>
-        public string AppOriginInfo { get; set; }
+        public string AppOriginInfo
+        {
+            get => appOriginInfo;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                appOriginInfo = value;
+            }
+        }
 
         /// <summary>
         /// <see cref="true"/> if this app is pinned, otherwise <seealso cref="false"/>.
         /// </summary>
-        public bool isPinned { get; set; } = false;
+        public bool isPinned
+        {
+            get => isPinned1;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                isPinned1 = value;
+            }
+        }
 
         /// <summary>
+
         /// Determines if the application is enabled.
         /// </summary>
-        public bool isEnabled { get; set; } = false;
+        public bool isEnabled
+        {
+            get => isEnabled1;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                isEnabled1 = value;
+            }
+        }
 
         /// <summary>
+
         /// Code Name of this App.
         /// </summary>
-        public string AppCodeName { get; set; }
+        public string AppCodeName
+        {
+            get => appCodeName;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                appCodeName = value;
+            }
+        }
 
         /// <summary>
         /// Permissions of this application.
@@ -294,14 +348,25 @@ namespace Yorot
     /// </summary>
     public class YorotApp
     {
+        private string appIcon;
+        private string author;
+        private string version = "0";
+        private int versionNo = 0;
+        private string fosterLink;
+        private string startFile;
+        private string appCodeName;
+        private string appName;
+        private bool multipleSession = false;
+
         /// <summary>
         /// Creates new <see cref="YorotApp"/>.
         /// </summary>
         /// <param name="xmlNode"><see cref="XmlNode"/> that contains details of <see cref="YorotApp"/>.</param>
         public YorotApp(string appCodeName, AppManager manager)
         {
-            AppCodeName = appCodeName;
             Manager = manager;
+            AppCodeName = appCodeName;
+
             string configFile = Manager.Main.AppsFolder + appCodeName + System.IO.Path.DirectorySeparatorChar + "app.ycf";
             if (!string.IsNullOrWhiteSpace(configFile))
             {
@@ -436,47 +501,119 @@ namespace Yorot
         /// <summary>
         /// Icon location of app.
         /// </summary>
-        public string AppIcon { get; set; }
+        public string AppIcon
+        {
+            get => appIcon;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                appIcon = value;
+            }
+        }
 
         /// <summary>
         /// Creator of this app.
         /// </summary>
-        public string Author { get; set; }
+        public string Author
+        {
+            get => author;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                author = value;
+            }
+        }
 
         /// <summary>
         /// Display version of this app.
         /// </summary>
-        public string Version { get; set; } = "0";
+        public string Version
+        {
+            get => version;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                version = value;
+            }
+        }
 
         /// <summary>
         /// Actual version of this app. Used by Foster.
         /// </summary>
-        public int VersionNo { get; set; } = 0;
+        public int VersionNo
+        {
+            get => versionNo;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                versionNo = value;
+            }
+        }
 
         /// <summary>
         /// URL of Foster file for this app.
         /// </summary>
-        public string FosterLink { get; set; }
+        public string FosterLink
+        {
+            get => fosterLink;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                fosterLink = value;
+            }
+        }
 
         /// <summary>
         /// Name of file (or URL) when loaded while starting app.
         /// </summary>
-        public string StartFile { get; set; }
+        public string StartFile
+        {
+            get => startFile;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                startFile = value;
+            }
+        }
 
         /// <summary>
         /// Codename of app.
         /// </summary>
-        public string AppCodeName { get; set; }
+        public string AppCodeName
+        {
+            get => appCodeName;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                appCodeName = value;
+            }
+        }
 
         /// <summary>
         /// Display name of application.
         /// </summary>
-        public string AppName { get; set; }
+        public string AppName
+        {
+            get => appName;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                appName = value;
+            }
+        }
 
         /// <summary>
         /// Determines if this application supports multiple sessions.
         /// </summary>
-        public bool MultipleSession { get; set; } = false;
+        public bool MultipleSession
+        {
+            get => multipleSession;
+            set
+            {
+                Manager.Main.OnAppListChanged();
+                multipleSession = value;
+            }
+        }
 
         /// <summary>
         /// Determines if this <see cref="YorotApp"/> is a system app.

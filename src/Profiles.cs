@@ -179,6 +179,10 @@ namespace Yorot
     /// </summary>
     public class YorotProfile
     {
+        private string name;
+        private string text;
+        private Settings settings;
+
         /// <summary>
         /// Creates a new profile. Does not inits the profile.
         /// </summary>
@@ -227,12 +231,28 @@ namespace Yorot
         /// <summary>
         /// Name of the profile, used as the folder name of the profile.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get => name;
+            set
+            {
+                Manager.Main.OnProfileChange(this);
+                name = value;
+            }
+        }
 
         /// <summary>
         /// Display name of the profile. This text will be displayed as the name instead.
         /// </summary>
-        public string Text { get; set; }
+        public string Text
+        {
+            get => text;
+            set
+            {
+                Manager.Main.OnProfileChange(this);
+                text = value;
+            }
+        }
 
         /// <summary>
         /// Full path of the profile directory.
@@ -242,7 +262,15 @@ namespace Yorot
         /// <summary>
         /// Settings of this profile.
         /// </summary>
-        public Settings Settings { get; set; }
+        public Settings Settings
+        {
+            get => settings;
+            set
+            {
+                Manager.Main.OnProfileChange(this);
+                settings = value;
+            }
+        }
 
         /// <summary>
         /// Path of profile picture of this profile.
