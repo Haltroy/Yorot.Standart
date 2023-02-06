@@ -1,11 +1,13 @@
-﻿namespace Yorot
+﻿using System.Threading.Tasks;
+
+namespace Yorot
 {
     /// <summary>
     /// Yorot Permission item
     /// </summary>
     public class YorotPermission
     {
-        private YorotPermissionMode allowance = YorotPermissionMode.None;
+        internal YorotPermissionMode allowance = YorotPermissionMode.None;
 
         /// <summary>
         /// Creates anew <see cref="YorotPermission"/>.
@@ -14,12 +16,12 @@
         /// <param name="requestor">The <see cref="object"/> that requested the permission.</param>
         /// <param name="main"><see cref="YorotMain"/></param>
         /// <param name="allowance">Permission mode.</param>
-        public YorotPermission(string id, object requestor, YorotMain main, YorotPermissionMode allowance = YorotPermissionMode.None)
+        public YorotPermission(string id, object requestor, YorotMain main, YorotPermissionMode _allowance = YorotPermissionMode.None)
         {
             ID = id;
             Requestor = requestor;
             Main = main;
-            Allowance = allowance;
+            allowance = _allowance;
         }
 
         /// <summary>
@@ -45,11 +47,11 @@
             get => allowance;
             set
             {
-                allowance =
-                    allowance == value ?
-                    allowance
-                    :
-                    Main.OnPermissionRequest(this, value);
+                Task.Run(async () =>
+                {
+                    var result = await Main.OnPermissionRequest(this, value);
+                    allowance = result;
+                });
             }
         }
     }

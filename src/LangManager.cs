@@ -377,14 +377,15 @@ namespace Yorot
         /// Finds Language Item from ID.
         /// </summary>
         /// <param name="ID">ID of translation.</param>
+        /// <param name="includeMIText">Determines if [MI] text should be added in front of the ID if the item is missing, hence the MI stands for "Missing Item"</param>
         /// <returns><see cref="string"/></returns>
-        public string GetItemText(string ID)
+        public string GetItemText(string ID, bool includeMIText = true)
         {
             ID = ID.Trim();
             if (!LangItems.ContainsKey(ID))
             {
                 Output.WriteLine("[Language] Missing Item [ID=\"" + ID + "\" LangFile=\"" + LangFile + "\"]", LogLevel.Warning);
-                return "[MI] " + ID;
+                return (includeMIText ? "[MI] " : "") + ID;
             }
             else
             {

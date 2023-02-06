@@ -311,7 +311,7 @@ namespace Yorot
             /// <param name="startNotifOnBoot">Determines if Yorot should start notification listener on start for this site.</param>
             /// <param name="allowWE">Determines if this website can use Web Engines.</param>
             /// <param name="allowYS">Determines if this site can access Yorot Special.</param>
-            public YorotSitePermissions(YorotSite site, YorotPermissionMode allowMic, YorotPermissionMode allowCam, YorotPermissionMode allowNotif, YorotPermissionMode allowCookies, int notifPriority, bool startNotifOnBoot, YorotPermissionMode allowPopup, YorotPermissionMode allowYS)
+            public YorotSitePermissions(YorotSite site, YorotPermissionMode allowMic = YorotPermissionMode.Deny, YorotPermissionMode allowCam = YorotPermissionMode.Deny, YorotPermissionMode allowNotif = YorotPermissionMode.Deny, YorotPermissionMode allowCookies = YorotPermissionMode.Allow, int notifPriority = 0, bool startNotifOnBoot = false, YorotPermissionMode allowPopup = YorotPermissionMode.Deny, YorotPermissionMode allowYS = YorotPermissionMode.Deny)
             {
                 Site = site;
                 this.allowMic = new YorotPermission("allowMic", site, site.Manager.Main, allowMic);

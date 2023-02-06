@@ -60,7 +60,9 @@ namespace Yorot
                                             YorotPermissionMode allowMic;
                                             if (Enum.TryParse(siteNode.InnerXml.XmlToString(), out allowMic))
                                             {
-                                                site.Permissions.allowMic.Allowance = allowMic;
+                                                if (site.Permissions is null)
+                                                { site.Permissions = new YorotSite.YorotSitePermissions(site); }
+                                                site.Permissions.allowMic.allowance = allowMic;
                                             }
                                             else
                                             {
@@ -72,7 +74,9 @@ namespace Yorot
                                             YorotPermissionMode allowCam;
                                             if (Enum.TryParse(siteNode.InnerXml.XmlToString(), out allowCam))
                                             {
-                                                site.Permissions.allowCam.Allowance = allowCam;
+                                                if (site.Permissions is null)
+                                                { site.Permissions = new YorotSite.YorotSitePermissions(site); }
+                                                site.Permissions.allowCam.allowance = allowCam;
                                             }
                                             else
                                             {
@@ -84,7 +88,9 @@ namespace Yorot
                                             YorotPermissionMode allowNotif;
                                             if (Enum.TryParse(siteNode.InnerXml.XmlToString(), out allowNotif))
                                             {
-                                                site.Permissions.allowNotif.Allowance = allowNotif;
+                                                if (site.Permissions is null)
+                                                { site.Permissions = new YorotSite.YorotSitePermissions(site); }
+                                                site.Permissions.allowNotif.allowance = allowNotif;
                                             }
                                             else
                                             {
@@ -96,7 +102,9 @@ namespace Yorot
                                             YorotPermissionMode allowCookies;
                                             if (Enum.TryParse(siteNode.InnerXml.XmlToString(), out allowCookies))
                                             {
-                                                site.Permissions.allowCookies.Allowance = allowCookies;
+                                                if (site.Permissions is null)
+                                                { site.Permissions = new YorotSite.YorotSitePermissions(site); }
+                                                site.Permissions.allowCookies.allowance = allowCookies;
                                             }
                                             else
                                             {
@@ -108,7 +116,9 @@ namespace Yorot
                                             YorotPermissionMode allowPopup;
                                             if (Enum.TryParse(siteNode.InnerXml.XmlToString(), out allowPopup))
                                             {
-                                                site.Permissions.allowPopup.Allowance = allowPopup;
+                                                if (site.Permissions is null)
+                                                { site.Permissions = new YorotSite.YorotSitePermissions(site); }
+                                                site.Permissions.allowPopup.allowance = allowPopup;
                                             }
                                             else
                                             {
@@ -120,7 +130,9 @@ namespace Yorot
                                             YorotPermissionMode allowYS;
                                             if (Enum.TryParse(siteNode.InnerXml.XmlToString(), out allowYS))
                                             {
-                                                site.Permissions.allowYS.Allowance = allowYS;
+                                                if (site.Permissions is null)
+                                                { site.Permissions = new YorotSite.YorotSitePermissions(site); }
+                                                site.Permissions.allowYS.allowance = allowYS;
                                             }
                                             else
                                             {
@@ -158,16 +170,19 @@ namespace Yorot
         public YorotSite GetSite(string url)
         {
             string baseurl = new System.Uri(url).Authority;
-            var siteList = Sites.FindAll(it => it.Url == baseurl);
+            var siteList = Sites.FindAll(it => it.Url == baseurl || it.Name == baseurl);
             if (siteList.Count > 0)
             {
                 return siteList[0];
             }
             else
             {
-                YorotSite site = new YorotSite();
-                site.Manager = this;
-                site.Url = baseurl;
+                YorotSite site = new YorotSite
+                {
+                    Manager = this,
+                    Name = baseurl,
+                    Url = baseurl
+                };
                 site.Permissions = new YorotSite.YorotSitePermissions(site);
                 Sites.Add(site);
                 return site;

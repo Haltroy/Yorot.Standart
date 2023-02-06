@@ -240,7 +240,7 @@ namespace Yorot
             string x = $"<Session Index=\"{SelectedIndex}\" IsDead=\"{(IsDead ? "true" : "false")}\" Date=\"{YorotDateAndTime.DMY.GetShortName(Date ?? DateTime.Today)}\" >{Environment.NewLine}";
             for (int i = 0; i < Count; i++)
             {
-                x += $"<SessionSite Url=\"{this[i].Url}\" Title=\"{this[i].Title}\" />{Environment.NewLine}";
+                x += $"<SessionSite Url=\"{this[i].Url.ToXML()}\" Title=\"{this[i].Title.ToXML()}\" />{Environment.NewLine}";
             }
             return x + "</Session>";
         }

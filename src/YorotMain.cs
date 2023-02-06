@@ -366,7 +366,7 @@ namespace Yorot
         /// <summary>
         /// Event raised by permissions on a permission change.
         /// </summary>
-        public abstract YorotPermissionMode OnPermissionRequest(YorotPermission permission, YorotPermissionMode requested);
+        public abstract System.Threading.Tasks.Task<YorotPermissionMode> OnPermissionRequest(YorotPermission permission, YorotPermissionMode requested);
 
         /// <summary>
         /// Event raised before launching all managers.

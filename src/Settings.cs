@@ -620,6 +620,7 @@ namespace Yorot
                 SessionManager.Shutdown();
                 FavManager.Save();
                 DownloadManager.Save();
+                SiteMan.Save();
                 if (!System.IO.File.Exists(Profile.Manager.Main.Profiles.Current.UserSettings))
                 {
                     System.IO.File.Create(Profile.Manager.Main.Profiles.Current.UserSettings).Close();
