@@ -124,7 +124,7 @@ namespace Yorot
         }
 
         /// <summary>
-        /// Enables a theöe.
+        /// Enables a theme.
         /// </summary>
         /// <param name="value"><see cref="YorotTheme.CodeName"/> of theme.</param>
         public void Enable(string value)
@@ -315,7 +315,7 @@ namespace Yorot
         /// </summary>
         public YorotTheme(ThemeManager man)
         {
-            Manager = man ?? throw new ArgumentNullException(nameof(man));
+            Manager = man;
         }
 
         /// <summary>
@@ -494,7 +494,10 @@ namespace Yorot
             get => name;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 name = value;
             }
         }
@@ -507,7 +510,10 @@ namespace Yorot
             get => author;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 author = value;
             }
         }
@@ -520,7 +526,10 @@ namespace Yorot
             get => codeName;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 codeName = value;
             }
         }
@@ -533,7 +542,10 @@ namespace Yorot
             get => hTUPDATE;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 hTUPDATE = value;
             }
         }
@@ -546,7 +558,10 @@ namespace Yorot
             get => version;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 version = value;
             }
         }
@@ -559,7 +574,10 @@ namespace Yorot
             get => thumbLoc;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 thumbLoc = value;
             }
         }
@@ -572,7 +590,10 @@ namespace Yorot
             get => config;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 config = value;
             }
         }
@@ -585,7 +606,10 @@ namespace Yorot
             get => isDefaultTheme1;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 isDefaultTheme1 = value;
             }
         }
@@ -598,7 +622,10 @@ namespace Yorot
             get => backColor;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 backColor = value;
             }
         }
@@ -626,7 +653,10 @@ namespace Yorot
             get => foreColor;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 foreColor = value;
             }
         }
@@ -639,7 +669,10 @@ namespace Yorot
             get => overlayColor;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 overlayColor = value;
             }
         }
@@ -667,7 +700,10 @@ namespace Yorot
             get => overlayForeColor;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 overlayForeColor = value;
             }
         }
@@ -696,7 +732,10 @@ namespace Yorot
             get => artColor;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 artColor = value;
             }
         }
@@ -724,7 +763,10 @@ namespace Yorot
             get => artForeColor;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 artForeColor = value;
             }
         }
@@ -752,7 +794,10 @@ namespace Yorot
             get => enabled;
             set
             {
-                Manager.Main.OnThemeChange(this);
+                if (Manager != null)
+                {
+                    Manager.Main.OnThemeChange(this);
+                }
                 enabled = value;
             }
         }

@@ -122,6 +122,12 @@ namespace Yorot
             Profiles = new ProfileManager(this);
         }
 
+        public void CompleteInit()
+        {
+            Init();
+            Profiles.Init();
+        }
+
         public void Init()
         {
             BeforeInit();
@@ -181,57 +187,9 @@ namespace Yorot
         }
 
         /// <summary>
-        /// Determines if Out-of-Box-Experience should be displayed, or in laymans term: user's first time running Yorot.
+        /// Determines if Out-of-Box-Experience should be displayed, or in layman's term: user's first time running Yorot.
         /// </summary>
         public bool OOBE { get; set; } = false;
-
-        /// <summary>
-        /// Gets the user agent string for your application with specific <paramref name="engineversion"/>.
-        /// </summary>
-        /// <param name="engineName">Name of the engine. Ex.: Chrome</param>
-        /// <param name="engineversion">Version of the engine used.</param>
-        /// <returns><see cref="string"/></returns>
-        public string GetUserAgent(string engineName, string engineVersion)
-        {
-            string osInfo = "";
-
-            var os = System.Environment.OSVersion;
-
-            if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
-            {
-                osInfo = "Windows NT " + os.Version.Major + "." + os.Version.Minor + "; [WINPROC]; [PROC]";
-            }
-            else if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Linux))
-            {
-                // TODO: (LONG-TERM) If Avalonia gets a Waylanbd support, figure out which one we use.
-                // Currently, Avalonia is X11 only so this is not a problem.
-                osInfo = "X11; Linux [XPROC]";
-            }
-            else if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.OSX))
-            {
-                osInfo = "Macintosh; [OSXPROC] Mac OS X" + os.Version.ToString().Replace(".", "_").Replace(" ", "_");
-            }
-            switch (System.Runtime.InteropServices.RuntimeInformation.ProcessArchitecture)
-            {
-                case System.Runtime.InteropServices.Architecture.X86:
-                    osInfo = osInfo.Replace("[PROC]", "x86").Replace("[WINPROC]", "Win32").Replace("[OSXPROC]", "Intel").Replace("[XPROC]", "i386");
-                    break;
-
-                case System.Runtime.InteropServices.Architecture.X64:
-                    osInfo = osInfo.Replace("[PROC]", "x64").Replace("[WINPROC]", "Win64").Replace("[OSXPROC]", "Intel").Replace("[XPROC]", "x86_64");
-                    break;
-
-                case System.Runtime.InteropServices.Architecture.Arm:
-                    osInfo = osInfo.Replace("[PROC]", "ARM").Replace("[WINPROC]", "WinARM").Replace("[OSXPROC]", "M1").Replace("[XPROC]", "ARM");
-                    break;
-
-                case System.Runtime.InteropServices.Architecture.Arm64:
-                    osInfo = osInfo.Replace("[PROC]", "Aarch64").Replace("[WINPROC]", "WinARM64").Replace("[OSXPROC]", "M1").Replace("[XPROC]", "ARM64");
-                    break;
-            }
-            CurrentUserAgent = $"Mozilla/5.0 ({osInfo}) AppleWebKit/537.36 (KHTML, like Gecko) {engineName}/{engineVersion} Safari/537.36 {Name}/{VersionText}";
-            return CurrentUserAgent;
-        }
 
         private System.Collections.Generic.List<YorotBrowserWebSource> _sources = new System.Collections.Generic.List<YorotBrowserWebSource>();
 
